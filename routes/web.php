@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DayController;
+use App\Http\Controllers\CalendarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +21,7 @@ Route::get('/', function () {
 
 Route::get('/day/{date}',[DayController::class, 'show'])
     ->name('day.show');
+
+Route::get('/calendar', [CalendarController::class, 'index'])
+    ->name('calendar.index');
 

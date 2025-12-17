@@ -6,33 +6,34 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Account;
+use Carbon\Carbon;
 
 class DayController extends Controller
 {
-    public function show(string $date)
-    {
-       $items = Item::whereDate('sche_start', $date)
-            ->orderBy('sche_start')
-            ->get();
+    public function show($date)
+{
+    $targetDate = Carbon::parse($date);
 
-       $accounts = Account::whereDate('date', $date)
-            ->orderBy('date')
-            ->get();
+    // 予定 / タスク
+    $items = Item::whereDate('sche_start', $targetDate)
+        ->orderBy('sche_start')
+        ->get();
 
-        $incomeTotal = $accounts
-            ->where('amount', '>' , 0)
-            ->sum('amount');
+    // 収入 / 支出
+    $accounts = Account::whereDate('date', $targetDate)
+        ->orderBy('date')
+        ->get();
 
-        $expenseTotal = $accounts
-        ->where('amount', '<', 0)
-        ->sum('amount');
+    // 合計
+    $incomeTotal = $accounts->where('subcategory_id', 3)->sum('amount'); // 入金
+    $expenseTotal = $accounts->where('subcategory_id', 4)->sum('amount'); // 出金
 
-       return view('day.show', [
-        'date' => $date,
+    return view('day.show', [
+        'date' => $targetDate,
         'items' => $items,
         'accounts' => $accounts,
         'incomeTotal' => $incomeTotal,
         'expenseTotal' => $expenseTotal,
-       ]);
-    }
+    ]);
+}
 }

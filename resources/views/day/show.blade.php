@@ -7,19 +7,21 @@
     <title>G05 当日詳細一覧</title>
 </head>
 <body>
-    <h1>G05 当日詳細一覧</h1>
-    <p>日付：{{ $date }}</p>
+    <h1>{{ $date->format('Y年m月d日') }}</h1>
+
 
     <hr>
 
-    <h2>予定/タスク一覧</h2>
+    <h2>予定/タスク</h2>
 
     <table border="1" cellpadding="5">
         <tr>
             <th>時間</th>
             <th>タイトル</th>
             <th>状態</th>
+            <th>メモ</th>
         </tr>
+
 
     @forelse($items as $item)
         <tr>
@@ -28,30 +30,49 @@
                 {{ optional($item->sche_end)->format('H:i') }}
             </td>
             <td>{{ $item->title }}</td>
-            <td>{{ $item->status_id }}</td>
+            <td>
+                @if ($item->status_id == 1)
+                    未
+                @elseif ($item->status_id == 2)
+                    済
+                @else
+                    -
+                @endif
+            </td>
+
+            <td>{{ $item->memo }}</td>
         </tr>
     @empty
         <tr>
-            <td colspan="3">予定はありません。</td>
+            <td colspan="4">予定はありません。</td>
         </tr>
     @endforelse
     </table>>
 
     <hr>
 
-    <h2>今日の収入/支出</h2>
+    <h2>収入/支出</h2>
     
     <table border="1" cellpadding="5">
-        <tr>金額</tr>
-        <tr>タイトル</tr>
-
-    @forelse($accounts as $account)
         <tr>
-            <td>{{ $account->amount }}円</td>
+            <th>種別</th>
+            <th>金額</th>
+            <th>タイトル</th>
+            <th>メモ</th>
+        </tr>
+
+    @forelse ($accounts as $account)
+        <tr>
+            <td>
+                {{ $account->subcategory_id == 3 ? '収入' : '支出' }}
+            </td>
+            <td>{{ number_format($account->amount) }}円</td>
             <td>{{ $account->title }}</td>
+            <td>{{ $account->memo }}</td>
+        </tr>
     @empty
         <tr>
-            <td colspan="2">収支はありません</td>
+            <td colspan="4">データはありません</td>
         </tr>
     @endforelse
 
