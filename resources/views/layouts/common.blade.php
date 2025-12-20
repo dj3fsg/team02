@@ -6,6 +6,7 @@
 </head>
 
 <body>
+    @include('parts.errors')
     @include('parts.header')
     @yield('content')
 </body>

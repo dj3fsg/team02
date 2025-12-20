@@ -6,6 +6,7 @@
 </head>
 
 <body>
+    @include('parts.errors')
     <div id="app">
         @include('parts.header')
 

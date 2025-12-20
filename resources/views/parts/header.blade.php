@@ -28,14 +28,22 @@
                 @endif
                 @else
                 <li class="nav-item">
-                    <a class="nav-link" href="/top">カレンダー</a>
+                    <a class="nav-link" href="/calendar">@can('isAdmin')★@endcan{{ Auth::user()->name }}のカレンダー</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/top">予定作成</a>
+                    <a class="nav-link" href="/calendar/create">予定作成</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/top">収支作成</a>
+                    <a class="nav-link" href="/accounts/create">収支作成</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('user_edit', ['id' => Auth::user()->id]) }}">ユーザー編集</a>
+                </li>
+                @can('isAdmin')
+                <li class="nav-item">
+                    <a class="nav-link" href="/users">★ユーザー一覧</a>
+                </li>
+                @endcan
                 <li class="nav-item">
                     <a class="nav-link" href="/logout">ログアウト</a>
                 </li>
