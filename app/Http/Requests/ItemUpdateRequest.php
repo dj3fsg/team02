@@ -1,28 +1,16 @@
 <?php
-
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class ItemUpdateRequest extends FormRequest
+// ItemStoreRequest を継承する
+class ItemUpdateRequest extends ItemStoreRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    public function rules()
     {
-        return false;
-    }
+        // 基本は Store と同じでOK
+        $rules = parent::rules();
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
-        ];
+        // もし更新時だけ変えたいルール（IDの重複チェック除外など）があればここで上書き
+        // 今回のケースなら parent::rules() のままで動くはずです
+        return $rules;
     }
 }

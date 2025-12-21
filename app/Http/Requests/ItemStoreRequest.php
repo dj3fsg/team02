@@ -7,77 +7,50 @@ use Carbon\Carbon;
 
 class ItemStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-      protected function prepareForValidation()
+    protected function prepareForValidation()
     {
-        //ラジオボタンでスケジュール選択の場合=>sche_start,sche_endを入力
-         if( $this->input('type')== "1"){
-            /*
-            日付＋時刻のマージ
-            終日の日程選択:開始日、終了日共通　
-            ー＞（開始日、終了日）+ 00:00
-            そうでない場合
-            開始日時：開始日＋開始時刻
-            終了日時：開始日＋終了時刻
-             */
-            if($this->boolean(is_allday)){
-                $sche_start = Carbon::parse($this->sche_start_date)->startOfDay();
-                $sche_end = Carbon::parse($this->sche_end_date)->addDay()->startOfDay();
+        // データの加工を行う前に、必要なキーが存在するか確認
+        if ($this->filled(['sche_start_date'])) {
+            try {
+                if ($this->boolean('chkAllday')) {
+                    $start = Carbon::parse($this->sche_start_date)->startOfDay();
+                    $end = Carbon::parse($this->sche_end_date ?? $this->sche_start_date)->addDay()->startOfDay();
+                } else {
+                    $start = Carbon::parse($this->sche_start_date . ' ' . $this->sche_start_time);
+                    $end = Carbon::parse($this->sche_start_date . ' ' . $this->sche_end_time);
+                }
 
-            }else{
-                $sche_start = Carbon::parse($this->sche_start_date . ' ' . $this->sche_start_time);
-                $sche_end = Carbon::parse($this->sche_start_date . ' ' . $this->sche_start_time);
+                $this->merge([
+                    'sche_start' => $start->toDateTimeString(),
+                    'sche_end'   => $end->toDateTimeString(),
+                ]);
+            } catch (\Exception $e) {
+                // パース失敗時は何もしない（rulesのdateバリデーションで弾く）
             }
-
-            $this->merge([
-                 'sche_start' => $this->input('sche_start'),
-                 'sche_end' => $this->input('sche_end'),
-
-            ]);
-
-            //データタイプは有効：0を入れる
-             $this->merge([
-        'type' => 0,
-    ]);
-           
-            //そうでなければsche_done入力
-            }else{
-                  $this->merge([
-                 'sche_done' => $this->input('sche_done'),
-
-            ]);
-            }
-        //ここでtypeの値を決める
-        //完了なら 2 そうでなければ　1
-        if($this->boolean('is_done')){
-            $data_type = 2;
-
-        }else{
-            $data_type = 1;
-
         }
-
-      
-
 
     }
 
     public function rules()
     {
         return [
+            // typeは 1(schedule) か 2(task) など、入力値と合わせる
+            'type'       => 'required', 
+            'title'      => 'required|string|max:255',
+            
+            // 変換後の値に対するバリデーション
+            'sche_start' => 'required_if:type,1|nullable|date',
+            'sche_end'   => 'nullable|date|after_or_equal:sche_start',
 
-            'title'   => 'string',
-            'memo' => 'string',
-            'location'  => 'string',
-            'sche_start' => ['date'],
-            'sche_end'   => ['date', 'after:sche_start'], //
+            'sche_done'  => 'required_if:type,2|nullable|date',
+            
+            'memo'       => 'nullable|string|max:255',
+            'location'   => 'nullable|string|max:255',
         ];
     }
 }
