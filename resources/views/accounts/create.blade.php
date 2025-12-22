@@ -114,8 +114,15 @@
         <!-- 金額 -->
         <div class="form-group">
             <label>金額</label>
-            <input type="number" name="amount" min="0" required>
+            <input type="number" name="amount"  required>
         </div>
+        
+        <!-- タイトル -->
+        <div class="form-group">
+            <label>タイトル</label>
+            <input type="text" name="title" >
+        </div>
+        
 
         <!-- カテゴリ -->
         <div class="form-group">
