@@ -11,6 +11,21 @@ class CalendarController extends Controller
 {
     public function index(Request $request)
     {
+        $kubun = [
+            2 => '収入',
+            3 => '支出',
+        ];
+
+        $category = [
+            1 => '食費',
+            2 => '日用品',
+            3 => '交通費',
+            4 => '家賃',
+            5 => '娯楽',
+            6 => '給料',
+            9 => 'その他',
+        ];
+
         // 基準日（指定がなければ今日）
         $baseDate = $request->date
             ? Carbon::parse($request->date)
@@ -47,6 +62,8 @@ class CalendarController extends Controller
             'expenseSums' => $expenseSums,
             'items'       => $items,
             'accounts'    => $accounts,
+            'kubun'       => $kubun,
+            'category'    => $category,
         ]);
     }
 }

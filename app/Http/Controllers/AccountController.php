@@ -30,15 +30,15 @@ class AccountController extends Controller
             // 'user_id'        => Auth::id(),
             'user_id'        => 1,
             'subcategory_id'=> $request->subcategory_id,
-            'type_id'        => 3, // date（固定でOK）
+            'type_id'        => $request->type, 
             'status_id'      => 1, // 仮：有効
             'date'           => $request->date,
-            // 'title'          => $request->title,
+            'title'          => $request->title,
             'amount'         => $request->amount,
             'memo'           => $request->memo,
         ]);
 
         // G05（当日詳細）へ戻る
-        return redirect()->route('calendar.show', ['date' => $request->date]);
+        return redirect()->route('calendar.events.show', ['date' => $request->date]);
     }
 }

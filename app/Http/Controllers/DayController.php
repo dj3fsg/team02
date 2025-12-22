@@ -10,6 +10,20 @@ class DayController extends Controller
 {
     public function show($date)
     {
+        $kubun = [
+            2 => '収入',
+            3 => '支出',
+        ];
+
+        $category = [
+            1 => '食費',
+            2 => '日用品',
+            3 => '交通費',
+            4 => '家賃',
+            5 => '娯楽',
+            6 => '給料',
+            9 => 'その他',
+        ];
         $date = Carbon::parse($date);
 
         // 予定 / タスク
@@ -32,7 +46,10 @@ class DayController extends Controller
             'items',
             'accounts',
             'incomeTotal',
-            'expenseTotal'
+            'expenseTotal',
+            'kubun',
+            'category'
+
         ));
     }
 }

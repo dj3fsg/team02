@@ -104,14 +104,14 @@
     <tbody>
     @forelse ($accounts as $account)
       <tr>
-        <td>{{ $account->subcategory_id == 3 ? '収入' : '支出' }}</td>
+        <td>{{ $kubun[$account->type_id] }}</td>
 
         <td>{{ number_format($account->amount) }}円</td>
 
         <td>{{ $account->title }}</td>
 
         {{-- カテゴリ（仮） --}}
-        <td>{{ $account->subcategory->subcategory ?? '-' }}</td>
+        <td>{{ $category[$account->subcategory_id] }}</td>
 
         <td>{{ $account->memo }}</td>
 
