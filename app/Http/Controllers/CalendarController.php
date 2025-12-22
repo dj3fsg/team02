@@ -11,21 +11,6 @@ class CalendarController extends Controller
 {
     public function index(Request $request)
     {
-        $kubun = [
-            2 => '収入',
-            3 => '支出',
-        ];
-
-        $category = [
-            1 => '食費',
-            2 => '日用品',
-            3 => '交通費',
-            4 => '家賃',
-            5 => '娯楽',
-            6 => '給料',
-            9 => 'その他',
-        ];
-
         // 基準日（指定がなければ今日）
         $baseDate = $request->date
             ? Carbon::parse($request->date)
@@ -40,30 +25,36 @@ class CalendarController extends Controller
             ->groupBy('date')
             ->pluck('count', 'date');
 
-        // 支出合計（日別）※ subcategory_id=2 を支出とする
+        // 支出合計（日別） subcategory_id = 2
         $expenseSums = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
             ->where('subcategory_id', 2)
             ->selectRaw('date, SUM(amount) as sum')
             ->groupBy('date')
             ->pluck('sum', 'date');
 
-        // ▼ 月内の予定（右サイド用）
+        // 収入合計（日別） subcategory_id = 1
+        $incomeSums = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('subcategory_id', 1)
+            ->selectRaw('date, SUM(amount) as sum')
+            ->groupBy('date')
+            ->pluck('sum', 'date');
+
+        // 月内の予定（右サイド用）
         $items = Item::select('id', 'title', 'sche_start', 'status_id', 'subcategory_id')
             ->whereBetween('sche_start', [$startOfMonth, $endOfMonth])
             ->get();
 
-        // ▼ 月内の収支（右サイド用）
+        // 月内の収支（右サイド用）
         $accounts = Account::select('id', 'title', 'date', 'amount', 'subcategory_id')
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
         return view('calendar.index', [
             'itemCounts'  => $itemCounts,
+            'incomeSums'  => $incomeSums,
             'expenseSums' => $expenseSums,
             'items'       => $items,
             'accounts'    => $accounts,
-            'kubun'       => $kubun,
-            'category'    => $category,
         ]);
     }
 }

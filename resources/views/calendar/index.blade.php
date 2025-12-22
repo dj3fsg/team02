@@ -7,72 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
+    <link rel="stylesheet" href="{{ asset('css/calendar.css') }}">
     <title>カレンダー</title>
-
-    <style>
-        body {
-            font-family: sans-serif;
-        }
-
-        .calendar-layout {
-            display: flex;
-            gap: 24px;
-            max-width: 1400px;
-            margin: 32px auto;
-        }
-
-        #calendar {
-            flex: 1;
-        }
-
-        .side-panel {
-            width: 320px;
-            border: 1px solid #ccc;
-            padding: 12px;
-            border-radius: 8px;
-            background: #fff;
-        }
-
-        .fc-count {
-            font-size: 13px;
-            text-align: center;
-            margin-top: 2px;
-            pointer-events: none;
-        }
-
-        .fc-expense {
-            font-size: 13px;
-            text-align: center;
-            margin-top: 2px;
-            background: #e6f4ea;
-            color: #256029;
-            padding: 2px 4px;
-            border-radius: 4px;
-            display: inline-block;
-            pointer-events: none;
-        }
-
-        .fc-daygrid-day {
-            cursor: pointer;
-        }
-
-        .fc-day-today {
-            background: #fff4f4 !important;
-        }
-
-        .side-panel ul {
-            padding-left: 0;
-            list-style: none;
-        }
-
-        .side-panel li {
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-    </style>
 </head>
-<body>
 
+<body>
 <div class="calendar-layout">
 
     <!-- 左：カレンダー -->
@@ -99,13 +38,17 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     const itemCounts  = @json($itemCounts);
+    const incomeSums  = @json($incomeSums);
     const expenseSums = @json($expenseSums);
     const items       = @json($items);
     const accounts    = @json($accounts);
 
-    const calendarEl = document.getElementById('calendar');
+    let clickTimer = null;
+    let clickedDate = null;
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    const calendar = new FullCalendar.Calendar(
+        document.getElementById('calendar'), {
+
         initialView: 'dayGridMonth',
         locale: 'ja',
         timeZone: 'local',
@@ -119,36 +62,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         dateClick: function(info) {
             const dateStr = info.dateStr;
-            document.getElementById('selected-date').textContent = dateStr;
 
-            // 予定表示
-            const itemList = document.getElementById('side-items');
-            itemList.innerHTML = '';
+            // ダブルクリック判定 → G05へ遷移
+            if (clickedDate === dateStr && clickTimer) {
+                clearTimeout(clickTimer);
+                clickTimer = null;
+                clickedDate = null;
 
-            items
-                .filter(i => i.sche_start.startsWith(dateStr))
-                .forEach(i => {
-                    const time = i.sche_start.slice(11, 16);
-                    const status = i.status_id == 1 ? '未' : '済';
-                    const type = i.subcategory_id == 3 ? '予定' : 'タスク';
+                window.location.href = `/calendar/events/${dateStr}`;
+                return;
+            }
 
-                    const li = document.createElement('li');
-                    li.textContent = `[${status}] ${type} ${time} ${i.title}`;
-                    itemList.appendChild(li);
-                });
-
-            // 収支表示
-            const accList = document.getElementById('side-accounts');
-            accList.innerHTML = '';
-
-            accounts
-                .filter(a => a.date === dateStr)
-                .forEach(a => {
-                    const sign = a.subcategory_id == 2 ? '-' : '+';
-                    const li = document.createElement('li');
-                    li.textContent = `${sign} ¥${Number(a.amount).toLocaleString()} ${a.title}`;
-                    accList.appendChild(li);
-                });
+            // シングルクリック → 右サイド表示
+            clickedDate = dateStr;
+            clickTimer = setTimeout(() => {
+                showSidePanel(dateStr);
+                clickTimer = null;
+                clickedDate = null;
+            }, 300);
         },
 
         dayCellDidMount: function(info) {
@@ -166,12 +97,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 html += `<div class="fc-count">予定：${itemCounts[dateStr]}件</div>`;
             }
 
+            if (incomeSums[dateStr]) {
+                html += `<div class="fc-income">収入：¥${Number(incomeSums[dateStr]).toLocaleString()}</div>`;
+            }
+
             if (expenseSums[dateStr]) {
                 html += `<div class="fc-expense">支出：¥${Number(expenseSums[dateStr]).toLocaleString()}</div>`;
             }
 
             if (html) {
                 const box = document.createElement('div');
+                box.className = 'fc-summary';
                 box.innerHTML = html;
                 frame.appendChild(box);
             }
@@ -179,6 +115,48 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     calendar.render();
+
+    // 右サイド表示処理
+    function showSidePanel(dateStr) {
+        document.getElementById('selected-date').textContent = dateStr;
+
+        // 予定
+        const itemList = document.getElementById('side-items');
+        itemList.innerHTML = '';
+        const todayItems = items.filter(i => i.sche_start.startsWith(dateStr));
+
+        if (todayItems.length === 0) {
+            itemList.innerHTML = '<li>予定はありません</li>';
+        } else {
+            todayItems.forEach(i => {
+                const time = i.sche_start.slice(11, 16);
+                const status = i.status_id == 1 ? '未' : '済';
+                const type = i.subcategory_id == 3 ? '予定' : 'タスク';
+
+                const li = document.createElement('li');
+                li.textContent = `[${status}] ${type} ${time} ${i.title}`;
+                itemList.appendChild(li);
+            });
+        }
+
+        // 収支
+        const accList = document.getElementById('side-accounts');
+        accList.innerHTML = '';
+        const todayAcc = accounts.filter(a => a.date === dateStr);
+
+        if (todayAcc.length === 0) {
+            accList.innerHTML = '<li>収支の登録はありません</li>';
+        } else {
+            todayAcc.forEach(a => {
+                // 2 = 支出、それ以外 = 収入
+                const sign = a.subcategory_id == 2 ? '-' : '+';
+                const li = document.createElement('li');
+                li.textContent = `${sign} ¥${Number(a.amount).toLocaleString()} ${a.title}`;
+                accList.appendChild(li);
+            });
+        }
+    }
+
 });
 </script>
 
