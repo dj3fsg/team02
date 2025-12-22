@@ -14,7 +14,7 @@ class ItemStoreRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        // データの加工を行う前に、必要なキーが存在するか確認
+        // データの加工を行う前に、必要なキーが存在するか確認。
         if ($this->filled(['sche_start_date'])) {
             try {
                 if ($this->boolean('chkAllday')) {
