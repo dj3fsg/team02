@@ -17,12 +17,12 @@ return new class extends Migration
             $table->foreignId('subcategory_id')->constrained();
             $table->foreignId('type_id')->constrained();
             $table->foreignId('status_id')->constrained();
-            $table->dateTime('sche_start', $precision = 0); //precision=0はミリ秒以下切り捨て
-            $table->dateTime('sche_end', $precision = 0);
-            $table->dateTime('sche_done', $precision = 0);
-            $table->string('title', 255);
-            $table->string('memo', 255);
-            $table->string('location', 255);
+            $table->dateTime('sche_start', $precision = 0)->nullable(true); //precision=0はミリ秒以下切り捨て
+            $table->dateTime('sche_end', $precision = 0)->nullable(true);
+            $table->dateTime('sche_done', $precision = 0)->nullable(true);
+            $table->string('title', 255)->nullable(true);
+            $table->string('memo', 255)->nullable(true);
+            $table->string('location', 255)->nullable(true);
             $table->timestamps(); //created/updated
         });
     }

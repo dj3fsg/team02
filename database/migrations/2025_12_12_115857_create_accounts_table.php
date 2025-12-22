@@ -17,10 +17,10 @@ return new class extends Migration
             $table->foreignId('subcategory_id')->constrained();
             $table->foreignId('type_id')->constrained();
             $table->foreignId('status_id')->constrained();
-            $table->date('date');
-            $table->string('title', 255);
-            $table->decimal('amount', total: 8, places: 2);
-            $table->string('memo', 255);
+            $table->date('date')->nullable(true);
+            $table->string('title', 255)->nullable(true);
+            $table->decimal('amount', total: 8, places: 2)->nullable(true);
+            $table->string('memo', 255)->nullable(true);
             $table->timestamps();
         });
     }
