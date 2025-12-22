@@ -23,7 +23,21 @@ class AccountController extends Controller
         $account = Account::findOrFail($id);
 
         $priceInput = $request->input('amount', $account->amount); // '10,000'
-        $price = (float)str_replace(',', '', $priceInput); // カンマとスペースを除去して数値に変換
+        //$price = (float)str_replace(',', '', $priceInput); // カンマとスペースを除去して数値に変換
+        $price = filter_var(str_replace(',', '', $priceInput), FILTER_VALIDATE_FLOAT);
+        if ($price === false) {
+            $errors = [
+                'error' => "amount must be number", //"Cannot cast '{$priceInput}' to float. Invalid numeric format."
+            ];
+            return  redirect()->back()->withErrors($errors);
+        }
+        if ($price < 0) {
+            // abort(404, 'amount cannot be negative.');
+            $errors = [
+                'error' => "amount cannot be negative.",
+            ];
+            return  redirect()->back()->withErrors($errors);
+        }
 
         $account->date = $request->input('date', $account->date);
         $account->subcategory_id = $request->input('subcategory_id', $account->subcategory_id);
