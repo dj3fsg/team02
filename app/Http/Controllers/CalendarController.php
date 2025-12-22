@@ -2,59 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Item;
 use App\Models\Account;
 
-
 class CalendarController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $today = Carbon::today();//今月
-        $year = $today->year;
-        $month = $today->month;
+        // 基準日（指定がなければ今日）
+        $baseDate = $request->date
+            ? Carbon::parse($request->date)
+            : Carbon::today();
 
-        $startOfMonth = $today->copy()->startOfMonth();//月初
-        $endOfMonth = $today->copy()->endOfMonth();//月初
-
-        $dates = [];
-        $current = $startOfMonth->copy();
-
-        while ($current <= $endOfMonth) {
-            $dates[] = $current->copy();
-            $current->addDay();
-        }
+        $startOfMonth = $baseDate->copy()->startOfMonth();
+        $endOfMonth   = $baseDate->copy()->endOfMonth();
 
         // 予定件数（日別）
-        $itemCounts = Item::whereBetween(
-                'sche_start',
-                [$startOfMonth, $endOfMonth]
-            )
+        $itemCounts = Item::whereBetween('sche_start', [$startOfMonth, $endOfMonth])
             ->selectRaw('DATE(sche_start) as date, COUNT(*) as count')
             ->groupBy('date')
             ->pluck('count', 'date');
 
-        // 支出合計（日別）
-        $expenseSums = Account::whereBetween(
-                'date',
-                [$startOfMonth, $endOfMonth]
-            )
-            ->where('subcategory_id', 4) // 出金
+        // 支出合計（日別）※ subcategory_id=2 を支出とする
+        $expenseSums = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('subcategory_id', 2)
             ->selectRaw('date, SUM(amount) as sum')
             ->groupBy('date')
             ->pluck('sum', 'date');
 
+        // ▼ 月内の予定（右サイド用）
+        $items = Item::select('id', 'title', 'sche_start')
+            ->whereBetween('sche_start', [$startOfMonth, $endOfMonth])
+            ->get();
+
+        // ▼ 月内の収支（右サイド用）
+        $accounts = Account::select('id', 'title', 'date', 'amount', 'subcategory_id')
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->get();
+
         return view('calendar.index', [
-            'year' => $year,
-            'month' => $month,
-            'dates' => $dates,
-            'itemCounts' => $itemCounts,
+            'itemCounts'  => $itemCounts,
             'expenseSums' => $expenseSums,
-]);
-
-
+            'items'       => $items,
+            'accounts'    => $accounts,
+        ]);
     }
 }

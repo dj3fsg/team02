@@ -19,9 +19,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/day/{date}',[DayController::class, 'show'])
-    ->name('day.show');
-
 Route::get('/calendar', [CalendarController::class, 'index'])
     ->name('calendar.index');
+
+Route::get('/calendar/events/{date}', [DayController::class, 'show'])
+    ->name('calendar.events.show');
 
