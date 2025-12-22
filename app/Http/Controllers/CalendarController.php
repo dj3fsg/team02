@@ -48,7 +48,7 @@ class CalendarController extends Controller
             ->pluck('sum', 'date');
 
         // ▼ 月内の予定（右サイド用）
-        $items = Item::select('id', 'title', 'sche_start')
+        $items = Item::select('id', 'title', 'sche_start', 'status_id', 'subcategory_id')
             ->whereBetween('sche_start', [$startOfMonth, $endOfMonth])
             ->get();
 
