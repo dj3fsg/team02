@@ -6,28 +6,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('subcategory_id')->constrained();
-            $table->foreignId('type_id')->constrained();
-            $table->foreignId('status_id')->constrained();
-            $table->date('date');
-            $table->string('title', 255);
-            $table->decimal('amount', total: 8, places: 2);
-            $table->string('memo', 255);
+
+            // 外部キーは後で貼る（今はカラムだけ作る）
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('subcategory_id');
+            $table->unsignedBigInteger('type_id');
+            $table->unsignedBigInteger('status_id');
+
+            $table->date('date'); // 必須にするならこのまま
+            $table->string('title', 255)->nullable(); // タイトルは任意ならnullable
+            $table->decimal('amount', 8, 2);          // 金額
+            $table->string('memo', 255)->nullable();  // メモは任意ならnullable
+
             $table->timestamps();
+
+            // 便利なインデックス（重くないし入れとくと◎）
+            $table->index('user_id');
+            $table->index('date');
+            $table->index('subcategory_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('accounts');
