@@ -9,6 +9,17 @@ class Account extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'subcategory_id',
+        'type_id',
+        'status_id',
+        'date',
+        'title',
+        'amount',
+        'memo',
+    ];
+
     protected $casts = [
         'date' => 'date',
     ];

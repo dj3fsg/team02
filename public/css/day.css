@@ -1,0 +1,266 @@
+/* =========================
+   全体レイアウト
+========================= */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", "Hiragino Kaku Gothic ProN",
+               Meiryo, sans-serif;
+  color: #222;
+  font-size: 15px;
+}
+
+.page-container {
+  max-width: 1080px;   
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+h1 {
+  text-align: center;
+  margin: 24px 0 20px;
+  font-size: 30px;
+}
+
+h2 {
+  font-size: 20px;
+  margin: 28px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 0.5px solid #999;
+  text-align: center;
+}
+
+/* =========================
+   左＋右レイアウト
+========================= */
+
+.page-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.main-area {
+  flex: 1;
+}
+
+/* =========================
+   スクロール枠
+========================= */
+
+.scroll-box {
+  max-height: 140px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+.account-scroll {
+  width: 820px;   
+}
+
+
+/* =========================
+   テーブル共通
+========================= */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th {
+  text-align: left;
+  vertical-align: center;
+  line-height: 1.6;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 3px 4px;
+  border-bottom: 1px solid #ccc;
+  background-color: rgb(249, 241, 231);
+}
+
+td {
+  text-align: left;
+  vertical-align: middle;
+  line-height: 1.6;
+  font-size: 15px;
+  padding: 6px 4px;
+  word-break: break-word;
+}
+
+/* =========================
+   予定 / タスク
+========================= */
+
+.task-table th:nth-child(1),
+.task-table td:nth-child(1) { width: 90px;
+                              text-align: center; }
+
+
+.task-table th:nth-child(2),
+.task-table td:nth-child(2) { width: 22%; }
+
+.task-table th:nth-child(3),
+.task-table td:nth-child(3) { width: 70px; 
+                              text-align: center; }
+
+.task-table th:nth-child(4),
+.task-table td:nth-child(4) { width: 60px;
+                              text-align: center; }
+
+.task-table th:nth-child(5),
+.task-table td:nth-child(5) { width: 90px;
+                              text-align: center; }
+
+.task-table th:nth-child(6),
+.task-table td:nth-child(6) { width: auto; }
+
+.task-table th:nth-child(7),
+.task-table td:nth-child(7) {
+  width: 70px;
+  text-align: center;
+}
+/* カテゴリ・状態・場所をグループ化 */
+.task-table td:nth-child(3),
+.task-table td:nth-child(4),
+.task-table td:nth-child(5) {
+  border-left: 1px solid #eee;
+  padding-left: 8px;
+}
+
+
+/* =========================
+   収入 / 支出
+========================= */
+
+/* 種別（収入 / 支出） */
+.account-table th:nth-child(1),
+.account-table td:nth-child(1) {
+  width: 30px;
+  text-align: center;
+}
+
+/* 金額 */
+.account-table th:nth-child(2),
+.account-table td:nth-child(2) {
+  width: 70px;
+  text-align: right;
+}
+
+/* タイトル */
+.account-table th:nth-child(3),
+.account-table td:nth-child(3) {
+  width: 12%;
+  text-align: center;
+}
+
+/* カテゴリ */
+.account-table th:nth-child(4),
+.account-table td:nth-child(4) {
+  width: 100px;
+  text-align: center;
+}
+
+/* メモ */
+.account-table th:nth-child(5),
+.account-table td:nth-child(5) {
+  width: 200px;
+  max-width: 260px;
+  word-break: break-word;
+}
+
+/* 編集 */
+.account-table th:nth-child(6),
+.account-table td:nth-child(6) {
+  width: 30px;
+  text-align: center;
+}
+/* カテゴリ列 */
+.account-table td:nth-child(4) {
+  border-left: 1px solid #eee;
+  padding-left: 8px;
+  width: 50px;
+}
+
+/* =========================
+   編集ボタン
+======================== */
+
+.btn-edit {
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px solid #666;
+  border-radius: 14px;
+  background: #fff;
+  text-decoration: none;
+  color: #000;
+}
+
+.btn-edit:hover {
+  background: #eee;
+}
+
+/* =========================
+   today カード
+========================= */
+
+.today-card {
+  width: 150px;
+  padding: 5px;
+  border: 1px solid #000;
+  margin-top: 5px;
+  background-color: rgb(244, 228, 207);
+}
+
+.today-card h3 {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 22px;
+}
+
+.today-item {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+/* =========================
+   ラインで区切る
+========================= */
+
+/* 予定 / タスク */
+.task-table td:nth-child(6) {
+  border-left: 2px solid #e0e0e0;
+  padding-left: 10px;
+  color: #333;
+}
+
+/* 収入 / 支出 */
+.account-table td:nth-child(5) {
+  border-left: 2px solid #e0e0e0;
+  padding-left: 10px;
+  color: #333;
+}
+/* 編集列：操作エリアとして区切る */
+.task-table td:nth-child(7),
+.account-table td:nth-child(6) {
+  border-left: 1px solid #ddd;
+  padding-left: 8px;
+}
+/* =========================
+   収支 + today 横並び
+========================= */
+
+.account-area {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* todayカードは固定幅 */
+.today-card {
+  width: 220px;
+  padding: 14px;
+  border: 1px solid #000;
+}
+
+

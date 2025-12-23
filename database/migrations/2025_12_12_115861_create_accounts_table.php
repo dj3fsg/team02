@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('accounts', function (Blueprint $table) {
@@ -22,12 +19,14 @@ return new class extends Migration
             $table->decimal('amount', total: 8, places: 2)->nullable(true);
             $table->string('memo', 255)->nullable(true);
             $table->timestamps();
+
+            // 便利なインデックス（重くないし入れとくと◎）
+            $table->index('user_id');
+            $table->index('date');
+            $table->index('subcategory_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('accounts');

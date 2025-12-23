@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
@@ -24,12 +21,16 @@ return new class extends Migration
             $table->string('memo', 255)->nullable(true);
             $table->string('location', 255)->nullable(true);
             $table->timestamps(); //created/updated
+
+            // インデックス（パフォーマンス用）
+            $table->index('user_id');
+            $table->index('subcategory_id');
+            $table->index('type_id');
+            $table->index('status_id');
+            $table->index('sche_start');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('items');
