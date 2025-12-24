@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DayController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,9 +53,14 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout']);
 
-Route::get('/users/{id}/edit', function () {
-    return "user edit";
-})->name('user_edit');
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+// 編集画面
+Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+// 更新処理
+Route::post('/users/{id}/update', [UserController::class, 'update'])->name('users.update');
+// 削除
+Route::post('/users/{id}/delete', [UserController::class, 'destroy'])->name('users.delete');
+
 
 // Route::get('/accounts/{id}/edit', function () {
 //     return view('accounts.edit');
