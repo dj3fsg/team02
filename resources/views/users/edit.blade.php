@@ -102,9 +102,10 @@
 
     </style>
 
-
+@include('parts.head')/*共通ヘッダ*/
 </head>
 <body>
+    @include('parts.header')
     <h2>ユーザ編集</h2>
 
     <form method="POST" action="{{ route('users.update', $user->id) }}">

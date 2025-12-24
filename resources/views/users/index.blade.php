@@ -30,8 +30,10 @@
 
     </style>
 
+@include('parts.head')
 </head>
 <body>
+    @include('parts.header')
     <h2>ユーザ一覧画面</h2>
     
 <table border="1"　>
