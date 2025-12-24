@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ItemController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DayController;
 use App\Http\Controllers\CalendarController;
@@ -22,6 +23,15 @@ Auth::routes();
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/calendar/create',[ItemController::class, 'create']);
+Route::post('/calendar',[ItemController::class, 'store']);
+Route::get('/calendar/edit/{id}',[ItemController::class, 'edit']);
+// 更新用：url('calendar/update/{id}') に対して PUT で待ち受ける
+Route::put('/calendar/update/{id}', [ItemController::class, 'update']);
+
+// 削除用：url('calendar/delete/{id}') に対して DELETE で待ち受ける
+Route::delete('/calendar/delete/{id}', [ItemController::class, 'delete']);
 
 Route::get('/calendar', [CalendarController::class, 'index'])
     ->name('calendar.index');
