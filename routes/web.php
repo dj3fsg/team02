@@ -17,7 +17,7 @@ use App\Http\Controllers\AccountController;
 |
 */
 
-Auth::routes();
+//Auth::routes();
 
 // 初期画面（不要なら消してOK）
 Route::get('/', function () {
