@@ -10,22 +10,17 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-
-            // 外部キーは後で貼る（今はカラムのみ）
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('subcategory_id');
-            $table->unsignedBigInteger('type_id');
-            $table->unsignedBigInteger('status_id');
-
-            $table->dateTime('sche_start')->nullable();
-            $table->dateTime('sche_end')->nullable();
-            $table->dateTime('sche_done')->nullable();
-
-            $table->string('title', 255)->nullable();
-            $table->string('memo', 255)->nullable();
-            $table->string('location', 255)->nullable();
-
-            $table->timestamps();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('subcategory_id')->constrained();
+            $table->foreignId('type_id')->constrained();
+            $table->foreignId('status_id')->constrained();
+            $table->dateTime('sche_start', $precision = 0)->nullable(true); //precision=0はミリ秒以下切り捨て
+            $table->dateTime('sche_end', $precision = 0)->nullable(true);
+            $table->dateTime('sche_done', $precision = 0)->nullable(true);
+            $table->string('title', 255)->nullable(true);
+            $table->string('memo', 255)->nullable(true);
+            $table->string('location', 255)->nullable(true);
+            $table->timestamps(); //created/updated
 
             // インデックス（パフォーマンス用）
             $table->index('user_id');

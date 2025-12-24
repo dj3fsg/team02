@@ -19,4 +19,8 @@ class Account extends Model
         'amount',
         'memo',
     ];
+
+    protected $casts = [
+        'date' => 'date',
+    ];
 }
