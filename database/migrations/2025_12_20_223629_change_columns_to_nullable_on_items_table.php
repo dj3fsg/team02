@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('category', 100);
-            $table->string('desc', 255);
-            $table->timestamps();
-        });
+        Schema::table('items', function (Blueprint $table) {
+        $table->string('memo')->nullable()->change();
+         $table->string('title')->nullable()->change();
+         $table->string('location')->nullable()->change();
+    });
     }
-
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::table('nullable_on_items', function (Blueprint $table) {
+            //
+        });
     }
 };
