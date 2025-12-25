@@ -18,16 +18,19 @@ use App\Http\Controllers\UserController;
 |
 */
 
-//Auth::routes();
+Auth::routes();
 
-// 初期画面（不要なら消してOK）
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::check()) {
+        return redirect('/calendar'); // ログイン済みならメイン画面
+    } else {
+        return view('auth.login'); // 未ログインならログイン画面
+    }
 });
 
-Route::get('/calendar/create',[ItemController::class, 'create']);
-Route::post('/calendar',[ItemController::class, 'store']);
-Route::get('/calendar/edit/{id}',[ItemController::class, 'edit']);
+Route::get('/calendar/create', [ItemController::class, 'create']);
+Route::post('/calendar', [ItemController::class, 'store']);
+Route::get('/calendar/edit/{id}', [ItemController::class, 'edit']);
 // 更新用：url('calendar/update/{id}') に対して PUT で待ち受ける
 Route::put('/calendar/update/{id}', [ItemController::class, 'update']);
 
