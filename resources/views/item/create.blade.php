@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カレンダー登録画面</title>
+    <title>予定作成</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    @include('parts.head')
 </head>
-<body class="p-3">
 
-    <div class="container">
+<body>
+    @include('parts.header')
+
+    <div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
+        <h1 class="h2">予定作成</h1>
+    </div>
+
+    <div class="container p-3">
         @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
         @endif
 
         <form method="POST" action="/calendar">
@@ -28,7 +36,7 @@
                     <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
                 </div>
                 <div class="col text-center">
-                    </div>
+                </div>
                 <div class="col text-end">
                     <button type="submit" class="btn btn-primary">登録</button>
                 </div>
@@ -38,20 +46,20 @@
                 <label class="form-label">種別</label><br>
                 <label class="me-3">
                     <input type="radio" name="type" value="schedule" id="type_schedule"
-                           {{ old('type', 'schedule') === 'schedule' ? 'checked' : '' }}>
+                        {{ old('type', 'schedule') === 'schedule' ? 'checked' : '' }}>
                     スケジュール
                 </label>
                 <label>
                     <input type="radio" name="type" value="task" id="type_task"
-                           {{ old('type') === 'task' ? 'checked' : '' }}>
+                        {{ old('type') === 'task' ? 'checked' : '' }}>
                     タスク
                 </label>
             </div>
 
             <div class="mb-3">
                 <label for="title" class="form-label">タイトル</label>
-                <input type="text" id="title" name="title" class="form-control" 
-                       value="{{ old('title') }}" placeholder="例：打合せ">
+                <input type="text" id="title" name="title" class="form-control"
+                    value="{{ old('title') }}" placeholder="例：打合せ">
             </div>
 
             <div id="schedule_area">
@@ -120,7 +128,7 @@
             </div>
         </form>
     </div>
-
     <script src="{{ asset('js/calendar.js') }}"></script>
 </body>
+
 </html>

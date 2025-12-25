@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
-    <title>収支作成（G08）</title>
+    <title>収支作成</title>
 
     <style>
         body {
@@ -19,14 +20,14 @@
             text-align: center;
         }
 
-        .container {
+        /* .container {
             max-width: 420px;
             margin: 40px auto;
             background-color: #fff;
             padding: 24px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        } */
 
         .form-group {
             margin-bottom: 16px;
@@ -84,75 +85,79 @@
             text-decoration: underline;
         }
     </style>
+    @include('parts.head')
 </head>
+
 <body>
+    @include('parts.header')
 
-<header>
-    <h1>収支入力</h1>
-</header>
+    <div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
+        <h1 class="h2">収支作成</h1>
+    </div>
 
-<div class="container">
+    <div class="container p-3">
 
-    <form method="POST" action="{{ route('accounts.store') }}">
-        @csrf
-        <!-- 日付 -->
-        <div class="form-group">
-            <label>日付</label>
-            <input type="date" name="date" required>
-        </div>
+        <form method="POST" action="{{ route('accounts.store') }}">
+            @csrf
+            <!-- 日付 -->
+            <div class="form-group">
+                <label>日付</label>
+                <input type="date" name="date" required>
+            </div>
 
-        <!-- 区分 -->
-        <div class="form-group">
-            <label>区分</label>
-            <select name="type" required>
-                <option value="0">選択してください</option>
-                <option value="2">収入</option>
-                <option value="3">支出</option>
-            </select>
-        </div>
+            <!-- 区分 -->
+            <div class="form-group">
+                <label>区分</label>
+                <select name="type" required>
+                    <option value="0">選択してください</option>
+                    <option value="2">収入</option>
+                    <option value="3">支出</option>
+                </select>
+            </div>
 
-        <!-- 金額 -->
-        <div class="form-group">
-            <label>金額</label>
-            <input type="number" name="amount"  required>
-        </div>
-        
-        <!-- タイトル -->
-        <div class="form-group">
-            <label>タイトル</label>
-            <input type="text" name="title" >
-        </div>
-        
+            <!-- 金額 -->
+            <div class="form-group">
+                <label>金額</label>
+                <input type="number" name="amount" required>
+            </div>
 
-        <!-- カテゴリ -->
-        <div class="form-group">
-            <label>カテゴリ</label>
-            <select name="subcategory_id">
-                <option value="0">選択してください</option>
-                <option value="1">食費</option>
-                <option value="2">日用品</option>
-                <option value="3">交通費</option>
-                <option value="4">家賃</option>
-                <option value="5">娯楽</option>
-                <option value="6">給料</option>
-                <option value="9">その他</option>
-            </select>
-        </div>
+            <!-- タイトル -->
+            <div class="form-group">
+                <label>タイトル</label>
+                <input type="text" name="title">
+            </div>
 
-        <!-- メモ -->
-        <div class="form-group">
-            <label>メモ</label>
-            <input type="text" name="memo">
-        </div>
 
-        <!-- ボタン -->
-        <div class="button-group">
-            <button type="submit">登録する</button>
-            <!-- <a href="#" class="back-link">戻る</a> -->
-        </div>
-    </form>
+            <!-- カテゴリ -->
+            <div class="form-group">
+                <label>カテゴリ</label>
+                <select name="subcategory_id">
+                    <option value="0">選択してください</option>
+                    <option value="1">食費</option>
+                    <option value="2">日用品</option>
+                    <option value="3">交通費</option>
+                    <option value="4">家賃</option>
+                    <option value="5">娯楽</option>
+                    <option value="6">給料</option>
+                    <option value="9">その他</option>
+                </select>
+            </div>
 
-</div>
+            <!-- メモ -->
+            <div class="form-group">
+                <label>メモ</label>
+                <input type="text" name="memo">
+            </div>
+
+            <!-- ボタン -->
+            <div class="button-group">
+                <button type="submit">登録する</button>
+                <!-- <a href="#" class="back-link">戻る</a> -->
+            </div>
+        </form>
+
+    </div>
 
 </body>
+
 </html>

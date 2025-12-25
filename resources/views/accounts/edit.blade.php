@@ -14,11 +14,11 @@
 <h2>updated_at : {{ $account->updated_at }}</h2> -->
 @if (Auth::id() == $account->user_id)
 
-<div class="mt-4 d-flex justify-content-center">
-    <h1>収支編集</h1>
+<div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
+    <h1 class="h2">収支編集</h1>
 </div>
 
-<div class="d-flex justify-content-center">
+<div class="p-3 d-flex justify-content-center">
     <form method="POST" action="{{ route('update', $account->id) }}">
         @csrf
         <table class="table">

@@ -37,7 +37,7 @@
                     <a class="nav-link" href="/accounts/create">収支作成</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('user_edit', ['id' => Auth::user()->id]) }}">ユーザー編集</a>
+                    <a class="nav-link" href="{{ route('users.edit', ['id' => Auth::user()->id]) }}">ユーザー編集</a>
                 </li>
                 @can('isAdmin')
                 <li class="nav-item">
