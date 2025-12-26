@@ -35,3 +35,7 @@ INSERT INTO `statuses` (`id`, `status`, `desc`) VALUES
 (1, 'disable', '無効'),
 (2, 'done', '完了'),
 (99, 'removed', '削除');
+
+-- 1st user (email:webapp002@tech/pass:12345678)
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `role_id`, `created_at`, `updated_at`) VALUES
+('1', 'webapp002', 'webapp002@tech', NULL, '$2y$12$OTS60mFTbu51gBEJL.wymuJjHmZV3mR3pQAd58T01vxh2PyMKKNiy', NULL, '99', NULL, NULL);
