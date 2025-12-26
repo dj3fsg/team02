@@ -9,9 +9,11 @@
 
     <link rel="stylesheet" href="{{ asset('css/calendar.css') }}">
     <title>カレンダー</title>
+    @include('parts.head')
 </head>
 
 <body>
+    @include('parts.header')
 <div class="calendar-layout">
 
     <!-- 左：カレンダー -->

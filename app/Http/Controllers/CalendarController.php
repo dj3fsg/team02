@@ -49,12 +49,18 @@ class CalendarController extends Controller
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
+        $kubun = [
+            1 => '支出',
+            2 => '収入',
+        ];
+
         return view('calendar.index', [
             'itemCounts'  => $itemCounts,
             'incomeSums'  => $incomeSums,
             'expenseSums' => $expenseSums,
             'items'       => $items,
             'accounts'    => $accounts,
+            'kubun'       => $kubun,
         ]);
     }
 }

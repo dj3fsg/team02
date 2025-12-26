@@ -71,6 +71,3 @@ Route::post('/message/update/{id}', [App\Http\Controllers\AccountController::cla
 
 Route::post('/message/delete/{id}', [App\Http\Controllers\AccountController::class, 'Delete'])->name('delete');
 
-Route::get('/calendar/events/{date}', function () {
-    return "g05";
-})->name('g05');

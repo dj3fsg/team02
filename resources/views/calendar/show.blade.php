@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G05 当日詳細一覧</title>
     <link rel="stylesheet" href="{{ asset('css/day.css') }}">
-
+    @include('parts.head')
 </head>
 <body>
+    @include('parts.header')
 <div class="page-container">
 <div class="page-layout">
 
@@ -104,7 +105,7 @@
     <tbody>
     @forelse ($accounts as $account)
       <tr>
-        <td>{{ $kubun[$account->type_id] }}</td>
+        <td>{{ $kubun[$account->subcategory_id] }}</td>
 
         <td>{{ number_format($account->amount) }}円</td>
 
