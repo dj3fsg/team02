@@ -10,10 +10,12 @@
 
     <link rel="stylesheet" href="{{ asset('css/calendar.css') }}">
     <title>カレンダー</title>
-<<<<<<< HEAD
-=======
 
     <style>
+
+
+
+
         body {
             font-family: sans-serif;
         }
@@ -58,35 +60,16 @@
             background: #fff;
         }
     </style>
->>>>>>> 323b3f784cbabd012d7d3476c5b0f55a9a9a727b
     @include('parts.head')
 </head>
 
 <body>
     @include('parts.header')
-<<<<<<< HEAD
 <div class="calendar-layout">
 
-    <!-- 左：カレンダー -->
-    <div id="calendar"></div>
+    
 
-    <!-- 右：サイドパネル -->
-    <aside class="side-panel">
-        <h3 id="selected-date">日付を選択</h3>
 
-        <section>
-            <h4>今日の予定 / タスク</h4>
-            <ul id="side-items"></ul>
-        </section>
-
-        <section>
-            <h4>今日の収入 / 支出</h4>
-            <ul id="side-accounts"></ul>
-        </section>
-    </aside>
-
-</div>
-=======
 
     <div id="calendar"></div>
 
@@ -169,7 +152,9 @@
         </aside>
 
     </div>
->>>>>>> 323b3f784cbabd012d7d3476c5b0f55a9a9a727b
+</div>
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
