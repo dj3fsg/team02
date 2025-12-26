@@ -29,7 +29,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/calendar'; //ログイン後はカレンダーへ'/home';
 
     /**
      * Create a new controller instance.
