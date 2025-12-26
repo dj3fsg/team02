@@ -99,6 +99,7 @@
 
         <form method="POST" action="{{ route('accounts.store') }}">
             @csrf
+
             <!-- 日付 -->
             <div class="form-group">
                 <label>日付</label>
@@ -108,7 +109,7 @@
             <!-- 区分 -->
             <div class="form-group">
                 <label>区分</label>
-                <select name="type" required>
+                <select name="type_id" required>
                     <option value="0">選択してください</option>
                     <option value="2">収入</option>
                     <option value="3">支出</option>

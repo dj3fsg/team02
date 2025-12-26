@@ -10,127 +10,13 @@
 
     <link rel="stylesheet" href="{{ asset('css/calendar.css') }}">
     <title>カレンダー</title>
-
-    <style>
-
-
-
-
-        body {
-            font-family: sans-serif;
-        }
-
-        #calendar {
-            max-width: 1100px;
-            margin: 40px auto;
-        }
-
-        .fc-count {
-            font-size: 12px;
-            margin-top: 4px;
-            pointer-events: none;
-        }
-
-        .fc-expense {
-            font-size: 12px;
-            margin-top: 2px;
-            background: #c8f7c5;
-            padding: 2px 4px;
-            border-radius: 4px;
-            display: inline-block;
-            pointer-events: none;
-        }
-
-        .calendar-layout {
-            display: flex;
-            gap: 24px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        #calendar {
-            flex: 1;
-        }
-
-        .side-panel {
-            width: 320px;
-            border: 1px solid #ccc;
-            padding: 12px;
-            border-radius: 8px;
-            background: #fff;
-        }
-    </style>
+        
     @include('parts.head')
 </head>
 
 <body>
     @include('parts.header')
-<div class="calendar-layout">
 
-    
-
-
-
-    <div id="calendar"></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const itemCounts = @json($itemCounts);
-            const expenseSums = @json($expenseSums);
-
-            let calendarEl = document.getElementById('calendar');
-
-            let calendar = new FullCalendar.Calendar(calendarEl, {
-                dateClick: function(info) {
-                    // info.dateStr は "2025-12-17" 形式
-                    window.location.href = `/calendar/events/${info.dateStr}`;
-                },
-
-                initialView: 'dayGridMonth',
-                timeZone: 'local',
-                locale: 'ja',
-                height: 'auto',
-                headerToolbar: {
-                    left: 'prev',
-                    center: 'title',
-                    right: 'next'
-                },
-
-                dayCellDidMount: function(info) {
-                    const dateStr =
-                        info.date.getFullYear() + '-' +
-                        String(info.date.getMonth() + 1).padStart(2, '0') + '-' +
-                        String(info.date.getDate()).padStart(2, '0');
-
-                    let html = '';
-
-                    if (itemCounts[dateStr]) {
-                        html += `<div style="font-size:12px;">予定：${itemCounts[dateStr]}件</div>`;
-                    }
-
-                    if (expenseSums[dateStr]) {
-                        html += `<div style="
-                        font-size:12px;
-                        background:#c8f7c5;
-                        display:inline-block;
-                        padding:2px 4px;
-                        border-radius:4px;
-                    ">
-                        支出：¥${Number(expenseSums[dateStr]).toLocaleString()}
-                    </div>`;
-                    }
-
-                    if (html) {
-                        const wrapper = document.createElement('div');
-                        wrapper.innerHTML = html;
-                        info.el.appendChild(wrapper);
-                    }
-                }
-            });
-
-            calendar.render();
-        });
-    </script>
     <div class="calendar-layout">
 
         <!-- 左：カレンダー -->
@@ -154,133 +40,186 @@
     </div>
 </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
+        const itemCounts  = @json($itemCounts);
+        const incomeSums  = @json($incomeSums);
+        const expenseSums = @json($expenseSums);
+        const items       = @json($items);
+        const accounts    = @json($accounts);
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+        let clickTimer = null;
+        let clickedDate = null;
 
-    const itemCounts  = @json($itemCounts);
-    const incomeSums  = @json($incomeSums);
-    const expenseSums = @json($expenseSums);
-    const items       = @json($items);
-    const accounts    = @json($accounts);
+        // ==========================
+        // 祝日データ取得 → カレンダー生成
+        // ==========================
+        fetch('https://holidays-jp.github.io/api/v1/date.json')
+            .then(res => res.json())
+            .then(holidays => {
 
-    let clickTimer = null;
-    let clickedDate = null;
+                const calendar = new FullCalendar.Calendar(
+                    document.getElementById('calendar'), {
 
-    const calendar = new FullCalendar.Calendar(
-        document.getElementById('calendar'), {
+                    initialView: 'dayGridMonth',
+                    locale: 'ja',
+                    timeZone: 'local',
+                    height: 'auto',
+                    fixedWeekCount: false,
 
-        initialView: 'dayGridMonth',
-        locale: 'ja',
-        timeZone: 'local',
-        height: 'auto',
+                    headerToolbar: {
+                        left: 'prev',
+                        center: 'title',
+                        right: 'next'
+                    },
 
-        headerToolbar: {
-            left: 'prev',
-            center: 'title',
-            right: 'next'
-        },
+                    // 「日」を消して数字だけ表示
+                    dayCellContent: function(arg) {
+                        return { html: `<span>${arg.date.getDate()}</span>` };
+                    },
 
-        dateClick: function(info) {
-            const dateStr = info.dateStr;
+                    dateClick: function(info) {
+                        const dateStr = info.dateStr;
 
-            // ダブルクリック判定 → G05へ遷移
-            if (clickedDate === dateStr && clickTimer) {
-                clearTimeout(clickTimer);
-                clickTimer = null;
-                clickedDate = null;
+                        document.querySelectorAll('.fc-day-selected')
+                            .forEach(el => el.classList.remove('fc-day-selected'));
 
-                window.location.href = `/calendar/events/${dateStr}`;
-                return;
+                        info.dayEl.classList.add('fc-day-selected');
+
+                        if (clickedDate === dateStr && clickTimer) {
+                            clearTimeout(clickTimer);
+                            clickedDate = null;
+                            window.location.href = `/calendar/events/${dateStr}`;
+                            return;
+                        }
+
+                        clickedDate = dateStr;
+                        clickTimer = setTimeout(() => {
+                            showSidePanel(dateStr);
+                            clickedDate = null;
+                        }, 300);
+                    },
+                    dayCellDidMount: function(info) {
+                const dateStr =
+                    info.date.getFullYear() + '-' +
+                    String(info.date.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(info.date.getDate()).padStart(2, '0');
+
+                const top = info.el.querySelector('.fc-daygrid-day-top');
+                const frame = info.el.querySelector('.fc-daygrid-day-frame');
+                if (!top || !frame) return;
+
+                /* ===== 日付 + 祝日を横並びにする ===== */
+                const wrapper = document.createElement('div');
+                wrapper.className = 'fc-day-label';
+
+                // 日付数字
+                const numberEl = top.querySelector('.fc-daygrid-day-number');
+                if (numberEl) {
+                    wrapper.appendChild(numberEl);
+                }
+
+                // 祝日
+                if (holidays[dateStr]) {
+                    info.el.classList.add('fc-day-holiday');
+
+                    const holidayEl = document.createElement('span');
+                    holidayEl.className = 'fc-holiday-label';
+                    holidayEl.textContent = holidays[dateStr];
+
+                    wrapper.appendChild(holidayEl);
+                }
+
+                // top を差し替え
+                top.innerHTML = '';
+                top.appendChild(wrapper);
+
+                /* ===== サマリー ===== */
+                let html = '';
+
+                if (itemCounts[dateStr]) {
+                    html += `<div class="fc-count">予定：${itemCounts[dateStr]}件</div>`;
+                }
+                if (incomeSums[dateStr]) {
+                    html += `<div class="fc-income">収入：¥${Number(incomeSums[dateStr]).toLocaleString()}</div>`;
+                }
+                if (expenseSums[dateStr]) {
+                    html += `<div class="fc-expense">支出：¥${Number(expenseSums[dateStr]).toLocaleString()}</div>`;
+                }
+
+                if (html) {
+                    const box = document.createElement('div');
+                    box.className = 'fc-summary';
+                    box.innerHTML = html;
+                    frame.appendChild(box);
+                }
             }
 
-            // シングルクリック → 右サイド表示
-            clickedDate = dateStr;
-            clickTimer = setTimeout(() => {
-                showSidePanel(dateStr);
-                clickTimer = null;
-                clickedDate = null;
-            }, 300);
-        },
+                                
+            });
 
-        dayCellDidMount: function(info) {
-            const dateStr =
-                info.date.getFullYear() + '-' +
-                String(info.date.getMonth() + 1).padStart(2, '0') + '-' +
-                String(info.date.getDate()).padStart(2, '0');
+                calendar.render();
+            });
 
-            const frame = info.el.querySelector('.fc-daygrid-day-frame');
-            if (!frame) return;
+        // ==========================
+        // 右サイド表示
+        // ==========================
+        function showSidePanel(dateStr) {
+            document.getElementById('selected-date').textContent = dateStr;
 
-            let html = '';
+            // 予定
+            const itemList = document.getElementById('side-items');
+            itemList.innerHTML = '';
+            const todayItems = items.filter(i => i.sche_start.startsWith(dateStr));
 
-            if (itemCounts[dateStr]) {
-                html += `<div class="fc-count">予定：${itemCounts[dateStr]}件</div>`;
+            if (todayItems.length === 0) {
+                itemList.innerHTML = '<li>予定はありません</li>';
+            } else {
+                todayItems.forEach(i => {
+
+                    console.log('item確認', i);
+
+                    const time = i.sche_start.slice(11, 16);
+                    const status = i.status_id == 1 ? '未' : '済';
+
+                    const type =
+                        i.subcategory_id == 1 ? '予定' :
+                        i.subcategory_id == 2 ? 'タスク' :
+                        '不明';
+
+                    const li = document.createElement('li');
+                    li.textContent = `【${type}】[${status}] ${time} ${i.title}`;
+                    itemList.appendChild(li);
+                });
             }
 
-            if (incomeSums[dateStr]) {
-                html += `<div class="fc-income">収入：¥${Number(incomeSums[dateStr]).toLocaleString()}</div>`;
-            }
+            // 収支
+            const accList = document.getElementById('side-accounts');
+            accList.innerHTML = '';
+            const todayAcc = accounts.filter(a => {
+                const d = new Date(a.date);
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` === dateStr;
+            });
 
-            if (expenseSums[dateStr]) {
-                html += `<div class="fc-expense">支出：¥${Number(expenseSums[dateStr]).toLocaleString()}</div>`;
-            }
+            if (todayAcc.length === 0) {
+                accList.innerHTML = '<li>収支の登録はありません</li>';
+            } else {
+                todayAcc.forEach(a => {
+                    const isExpense = a.type_id == 1;
+                    const label = isExpense ? '支出' : '収入';
+                    const sign  = isExpense ? '-' : '+';
 
-            if (html) {
-                const box = document.createElement('div');
-                box.className = 'fc-summary';
-                box.innerHTML = html;
-                frame.appendChild(box);
+                    const li = document.createElement('li');
+                    li.classList.add(isExpense ? 'expense' : 'income');
+                    li.textContent = `${label} ${sign}¥${Number(a.amount).toLocaleString()} ${a.title}`;
+                    accList.appendChild(li);
+                });
             }
         }
+
     });
-
-    calendar.render();
-
-    // 右サイド表示処理
-    function showSidePanel(dateStr) {
-        document.getElementById('selected-date').textContent = dateStr;
-
-        // 予定
-        const itemList = document.getElementById('side-items');
-        itemList.innerHTML = '';
-        const todayItems = items.filter(i => i.sche_start.startsWith(dateStr));
-
-        if (todayItems.length === 0) {
-            itemList.innerHTML = '<li>予定はありません</li>';
-        } else {
-            todayItems.forEach(i => {
-                const time = i.sche_start.slice(11, 16);
-                const status = i.status_id == 1 ? '未' : '済';
-                const type = i.subcategory_id == 3 ? '予定' : 'タスク';
-
-                const li = document.createElement('li');
-                li.textContent = `[${status}] ${type} ${time} ${i.title}`;
-                itemList.appendChild(li);
-            });
-        }
-
-        // 収支
-        const accList = document.getElementById('side-accounts');
-        accList.innerHTML = '';
-        const todayAcc = accounts.filter(a => a.date === dateStr);
-
-        if (todayAcc.length === 0) {
-            accList.innerHTML = '<li>収支の登録はありません</li>';
-        } else {
-            todayAcc.forEach(a => {
-                // 2 = 支出、それ以外 = 収入
-                const sign = a.subcategory_id == 2 ? '-' : '+';
-                const li = document.createElement('li');
-                li.textContent = `${sign} ¥${Number(a.amount).toLocaleString()} ${a.title}`;
-                accList.appendChild(li);
-            });
-        }
-    }
-
-});
-</script>
+    </script>
 
 </body>
 

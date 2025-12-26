@@ -105,7 +105,7 @@
     <tbody>
     @forelse ($accounts as $account)
       <tr>
-        <td>{{ $kubun[$account->subcategory_id] }}</td>
+        <td>{{ $kubun[$account->type_id] }}</td>
 
         <td>{{ number_format($account->amount) }}円</td>
 

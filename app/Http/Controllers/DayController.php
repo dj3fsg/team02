@@ -34,11 +34,11 @@ class DayController extends Controller
 
         // todayカード用 集計
         $incomeTotal = Account::whereDate('date', $date)
-            ->where('subcategory_id', 2) // 収入
+            ->where('type_id', 2) // 収入
             ->sum('amount');
 
         $expenseTotal = Account::whereDate('date', $date)
-            ->where('subcategory_id', 1) // 支出
+            ->where('type_id', 1) // 支出
             ->sum('amount');
 
         return view('calendar.show', compact(

@@ -24,13 +24,13 @@ class AccountController extends Controller
             'amount'     => 'required|numeric|min:0',
             'memo'       => 'nullable|string|max:255',
         ]);
-
+    
         // 登録
         Account::create([
             // 'user_id'        => Auth::id(),
             'user_id'        => 1,
             'subcategory_id' => $request->subcategory_id,
-            'type_id'        => $request->type,
+            'type_id'        => $request->type_id,
             'status_id'      => 1, // 仮：有効
             'date'           => $request->date,
             'title'          => $request->title,
