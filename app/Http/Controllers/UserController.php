@@ -62,12 +62,12 @@ public function update(Request $request, $id)
 
 
  // ★ 権限処理（最重要）
-        if (Auth::user()->role == 0) {
+        if (Auth::user()->role_id == 0) {
             // 一般ユーザ → 変更禁止（強制0）
-            $user->role = 0;
+            $user->role_id = 0;
         } else {
             // 管理者 → 変更可能
-            $user->role = $request->role;
+            $user->role_id = $request->role;
         }
 
     $user->save();

@@ -9,14 +9,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 /*use App\Http\Controllers\CalendarController;*/
 use App\Models\Item;
+use Illuminate\Support\Facades\Auth;
 
 class ItemController extends Controller
 {
-
-  /**これはマージ時に消す */
- public function index(){
-    return view('dummy');
- }
 
   public function create()
     {
@@ -145,8 +141,8 @@ public function update(Request $request, $id)
     public function edit($id){
        // 1) 編集対象のデータ（id）を取得
     $item = Item::where('id', $id) 
-        //->where('user_id', auth()->id()) // ★本人の予定だけ
-        ->where('user_id',1) // ★本人の予定だけ
+        ->where('user_id', Auth::id()) // ★本人の予定だけ
+         // ★本人の予定だけuser_id=1
         ->where('status_id', '<>', 99)//削除済みのものは出さない
         ->firstOrFail();
 

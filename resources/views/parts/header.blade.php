@@ -45,8 +45,14 @@
                 </li>
                 @endcan
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout">ログアウト</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="nav-link logout-btn">
+                            ログアウト
+                        </button>
+                    </form>
                 </li>
+
                 @endguest
             </ul>
         </div>

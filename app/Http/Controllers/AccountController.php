@@ -27,8 +27,8 @@ class AccountController extends Controller
     
         // 登録
         Account::create([
-            // 'user_id'        => Auth::id(),
-            'user_id'        => 1,
+            'user_id'        => Auth::id(),
+            //'user_id'        => 1,
             'account_category_id' => $request->account_category_id,
             'subcategory_id' => $request->subcategory_id,
             'type_id'        => null,
