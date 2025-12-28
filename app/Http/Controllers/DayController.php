@@ -27,17 +27,23 @@ class DayController extends Controller
         $date = Carbon::parse($date);
 
         // 予定 / タスク
-        $items = Item::whereDate('sche_start', $date)->get();
+        $items = Item::whereDate('sche_start', $date)
+                ->where('status_id', '<>', 99)
+                ->get();
 
         // 収入 / 支出（一覧用）
-        $accounts = Account::whereDate('date', $date)->get();
+        $accounts = Account::whereDate('date', $date)
+                ->where('status_id', '<>', 99)
+                ->get();
 
         // todayカード用 集計
         $incomeTotal = Account::whereDate('date', $date)
+            ->where('status_id', '<>', 99)
             ->where('subcategory_id', 3) // 収入
             ->sum('amount');
 
         $expenseTotal = Account::whereDate('date', $date)
+            ->where('status_id', '<>', 99)
             ->where('subcategory_id', 4) // 支出
             ->sum('amount');
 

@@ -74,10 +74,11 @@
         {{-- 編集のみ --}}
         <td>
           <a
-            href="{{ url('/calendar/' . $item->id . '/edit') }}?date={{ $date->format('Y-m-d') }}"
+            href="{{ route('items.edit', $item->id) }}"
             class="btn-edit"
           >
             編集
+          </a>
           </a>
         </td>
       </tr>
@@ -124,7 +125,7 @@
 
         <td class="edit-cell">
           <a
-            href="{{ url('/accounts/' . $account->id . '/edit') }}?date={{ $date->format('Y-m-d') }}"
+            href="{{ route('accounts.edit', $account->id) }}"
             class="btn-edit"
           >
             編集

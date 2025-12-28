@@ -21,12 +21,14 @@ class CalendarController extends Controller
 
         // 予定件数（日別）
         $itemCounts = Item::whereBetween('sche_start', [$startOfMonth, $endOfMonth])
+            ->where('status_id', '<>', 99)
             ->selectRaw('DATE(sche_start) as date, COUNT(*) as count')
             ->groupBy('date')
             ->pluck('count', 'date');
 
         // 支出合計（日別） subcategory_id = 4
         $expenseSums = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('status_id', '<>', 99)
             ->where('subcategory_id', 4)
             ->selectRaw('date, SUM(amount) as sum')
             ->groupBy('date')
@@ -34,6 +36,7 @@ class CalendarController extends Controller
 
         // 収入合計（日別） subcategory_id = 3
         $incomeSums = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('status_id', '<>', 99)
             ->where('subcategory_id', 3)
             ->selectRaw('date, SUM(amount) as sum')
             ->groupBy('date')
@@ -42,11 +45,13 @@ class CalendarController extends Controller
         // 月内の予定（右サイド用）
         $items = Item::select('id', 'title', 'sche_start', 'status_id', 'subcategory_id')
             ->whereBetween('sche_start', [$startOfMonth, $endOfMonth])
+            ->where('status_id', '<>', 99)
             ->get();
 
         // 月内の収支（右サイド用）
         $accounts = Account::select('id', 'title', 'date', 'amount', 'subcategory_id', 'account_category_id')
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('status_id', '<>', 99)
             ->get();
 
         $subcategories = [

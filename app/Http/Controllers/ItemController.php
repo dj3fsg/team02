@@ -122,8 +122,10 @@ public function update(Request $request, $id)
     }
 
     $item->save();
-    return redirect('/calendar')->with('success', '更新しました');
-}
+    return redirect()->route('calendar.events.show', [
+            'date' => \Carbon\Carbon::parse($item->sche_start)->format('Y-m-d')
+        ])->with('success', '更新しました');
+    }
 
     public function delete($id)
     {
@@ -133,9 +135,12 @@ public function update(Request $request, $id)
     $item->status_id = 99;
     $item->save();
 
-    // 削除後にカレンダー一覧へリダイレクト
-    return redirect('/calendar')->with('success', '予定を削除しました');
+    // 削除後に当日詳細ー一覧へリダイレクト
+    return redirect()->route('calendar.events.show', [
+        'date' => \Carbon\Carbon::parse($item->sche_start)->format('Y-m-d')
+    ])->with('success', '削除しました');
     }
+
 
     public function edit($id){
        // 1) 編集対象のデータ（id）を取得

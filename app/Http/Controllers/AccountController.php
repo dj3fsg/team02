@@ -44,7 +44,7 @@ class AccountController extends Controller
     }
 
     //
-    public function Edit($id)
+    public function edit($id)
     {
         $account = Account::find($id);
         return view('accounts.edit', compact('account'));
@@ -82,7 +82,10 @@ class AccountController extends Controller
         $account->memo = $request->input('memo', $account->memo);
         $account->update();
 
-        return redirect()->route('g05', ['date' => $account->date->format('Y-m-d')]);
+        return redirect()->route('calendar.events.show', [
+            'date' => \Carbon\Carbon::parse($account->date)->format('Y-m-d')
+        ])->with('success', '更新しました');
+
     }
 
     public function delete(Request $request, $id)
@@ -95,6 +98,9 @@ class AccountController extends Controller
         $account->status_id = 99;
         $account->update();
 
-        return redirect()->route('g05', ['date' => $account->date->format('Y-m-d')]);
+        return redirect()->route('calendar.events.show', [
+            'date' => \Carbon\Carbon::parse($account->date)->format('Y-m-d')
+        ])->with('success', '削除しました');
+
     }
 }
