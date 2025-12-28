@@ -10,9 +10,9 @@ class DayController extends Controller
 {
     public function show($date)
     {
-        $kubun = [
-            2 => '収入',
-            1 => '支出',
+        $subcategories = [
+            3 => '収入',
+            4 => '支出',
         ];
 
         $category = [
@@ -34,11 +34,11 @@ class DayController extends Controller
 
         // todayカード用 集計
         $incomeTotal = Account::whereDate('date', $date)
-            ->where('type_id', 2) // 収入
+            ->where('subcategory_id', 3) // 収入
             ->sum('amount');
 
         $expenseTotal = Account::whereDate('date', $date)
-            ->where('type_id', 1) // 支出
+            ->where('subcategory_id', 4) // 支出
             ->sum('amount');
 
         return view('calendar.show', compact(
@@ -47,7 +47,7 @@ class DayController extends Controller
             'accounts',
             'incomeTotal',
             'expenseTotal',
-            'kubun',
+            'subcategories',
             'category'
 
         ));

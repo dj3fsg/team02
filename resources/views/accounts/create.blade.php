@@ -109,10 +109,10 @@
             <!-- 区分 -->
             <div class="form-group">
                 <label>区分</label>
-                <select name="type_id" required>
+                <select name="subcategory_id" required>
                     <option value="0">選択してください</option>
-                    <option value="2">収入</option>
-                    <option value="3">支出</option>
+                    <option value="3">収入</option>
+                    <option value="4">支出</option>
                 </select>
             </div>
 
@@ -132,7 +132,7 @@
             <!-- カテゴリ -->
             <div class="form-group">
                 <label>カテゴリ</label>
-                <select name="subcategory_id">
+                <select name="account_category_id">
                     <option value="0">選択してください</option>
                     <option value="1">食費</option>
                     <option value="2">日用品</option>

@@ -25,16 +25,16 @@ class CalendarController extends Controller
             ->groupBy('date')
             ->pluck('count', 'date');
 
-        // 支出合計（日別） subcategory_id = 2
+        // 支出合計（日別） subcategory_id = 4
         $expenseSums = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->where('type_id', 1)
+            ->where('subcategory_id', 4)
             ->selectRaw('date, SUM(amount) as sum')
             ->groupBy('date')
             ->pluck('sum', 'date');
 
-        // 収入合計（日別） subcategory_id = 1
+        // 収入合計（日別） subcategory_id = 3
         $incomeSums = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->where('type_id', 2)
+            ->where('subcategory_id', 3)
             ->selectRaw('date, SUM(amount) as sum')
             ->groupBy('date')
             ->pluck('sum', 'date');
@@ -45,13 +45,13 @@ class CalendarController extends Controller
             ->get();
 
         // 月内の収支（右サイド用）
-        $accounts = Account::select('id', 'title', 'date', 'amount', 'subcategory_id', 'type_id')
+        $accounts = Account::select('id', 'title', 'date', 'amount', 'subcategory_id', 'account_category_id')
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->get();
 
-        $kubun = [
-            1 => '支出',
-            2 => '収入',
+        $subcategories = [
+            4 => '支出',
+            3 => '収入',
         ];
 
         return view('calendar.index', [
@@ -60,7 +60,7 @@ class CalendarController extends Controller
             'expenseSums' => $expenseSums,
             'items'       => $items,
             'accounts'    => $accounts,
-            'kubun'       => $kubun,
+            'subcategory' => $subcategories,
         ]);
     }
 }

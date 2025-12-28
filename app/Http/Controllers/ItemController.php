@@ -67,7 +67,7 @@ public function store(ItemStoreRequest $request)
         }
 
         // ステータス（HTMLの name="status_id" に合わせる）
-        $item->status_id = $request->has('status_id') ? 2 : 0; 
+        $item->status_id = $request->has('status_id') ? 2 : 1; 
 
         // ★ここで保存
         $item->save();
@@ -106,7 +106,7 @@ public function update(Request $request, $id)
     $item->title = $request->title;
     $item->location = $request->location;
     $item->memo = $request->memo;
-    $item->status_id = $request->has('status_id') ? 2 : 0;
+    $item->status_id = $request->has('status_id') ? 2 : 1;
 
     // all_dayチェックの有無で、使う値を明示的に分ける
     if ($request->has('all_day')) {

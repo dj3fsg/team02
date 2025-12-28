@@ -139,7 +139,7 @@
                 let html = '';
 
                 if (itemCounts[dateStr]) {
-                    html += `<div class="fc-count">予定：${itemCounts[dateStr]}件</div>`;
+                    html += `<div class="fc-count">予定/タスク：${itemCounts[dateStr]}件</div>`;
                 }
                 if (incomeSums[dateStr]) {
                     html += `<div class="fc-income">収入：¥${Number(incomeSums[dateStr]).toLocaleString()}</div>`;
@@ -206,7 +206,7 @@
                 accList.innerHTML = '<li>収支の登録はありません</li>';
             } else {
                 todayAcc.forEach(a => {
-                    const isExpense = a.type_id == 1;
+                    const isExpense = a.subcategory_id == 4;
                     const label = isExpense ? '支出' : '収入';
                     const sign  = isExpense ? '-' : '+';
 

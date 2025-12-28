@@ -12,6 +12,7 @@ class Account extends Model
     protected $fillable = [
         'user_id',
         'subcategory_id',
+        'account_category_id',
         'type_id',
         'status_id',
         'date',

@@ -187,19 +187,22 @@ td {
 ======================== */
 
 .btn-edit {
-  font-size: 12px;
-  padding: 2px 8px;
-  border: 1px solid #666;
-  border-radius: 14px;
-  background: #fff;
-  text-decoration: none;
-  color: #000;
+    display: inline-block;
+    padding: 4px 10px;
+    border: 1px solid #333;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 12px;
 }
 
 .btn-edit:hover {
   background: #eee;
 }
-
+.edit-cell {
+    white-space: nowrap;
+    width: 80px;
+    text-align: center;
+}
 /* =========================
    today カード
 ========================= */
