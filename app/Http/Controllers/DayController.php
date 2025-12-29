@@ -34,6 +34,7 @@ class DayController extends Controller
         $items = Item::where('user_id', $userId)
             ->whereDate('sche_start', $date)
             ->where('status_id', '<>', 99)
+            ->OrderBy('sche_start', 'asc')
             ->get();
 
 

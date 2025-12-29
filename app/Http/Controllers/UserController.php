@@ -67,12 +67,15 @@ public function update(Request $request, $id)
             $user->role_id = 0;
         } else {
             // 管理者 → 変更可能
-            $user->role_id = $request->role;
+            $user->role_id = $request->role_id;
         }
 
     $user->save();
+    if($request->role_id == 99){
+        return redirect()->route('users.index')->with('success', '更新しました。');
+    }
 
-    return redirect()->route('users.index')->with('success', '更新しました');
+    return redirect()->route('calendar.index')->with('success', '更新しました');
 }
 
     // ④削除処理

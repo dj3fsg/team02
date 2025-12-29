@@ -170,11 +170,12 @@
 
 
             <div class="form-group">
-                <label class="form-label">権限</label>
+                
 
                 {{-- ログインユーザーが管理者なら編集可能 --}}
                 @if (auth()->user()->role_id == 99)
 
+                <label class="form-label">権限</label>
                 <select name="role_id" class="role-group">
                     <option value="0" {{ $user->role_id == 0 ? 'selected' : '' }}>一般</option>
                     <option value="99" {{ $user->role_id == 99 ? 'selected' : '' }}>管理者</option>
@@ -183,8 +184,8 @@
                 {{-- ログインユーザーが一般なら表示だけ（変更不可） --}}
                 @else
 
-                <input type="text" class="role-group"
-                    value="{{ $user->role_id == 99 ? '管理者' : '一般' }}" readonly>
+                <!-- <input type="text" class="role-group"
+                    value="{{ $user->role_id == 99 ? '管理者' : '一般' }}" readonly> -->
 
                 {{-- 強制的に元のroleを送る hidden --}}
                 <input type="hidden" name="role_id" value="{{ $user->role_id }}">
@@ -197,13 +198,14 @@
 
             </div>
         </form>
-
+        @if (auth()->user()->role_id == 99)
         <div class="p-group">
             <form method="POST" action="{{ route('users.delete', $user->id) }}">
                 @csrf
                 <p><button type="submit" class="btn-red" name="user_delete">削除</button></p>
             </form>
         </div>
+        @endif
         </table>
     </div>
 </body>
