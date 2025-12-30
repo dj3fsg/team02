@@ -24,7 +24,7 @@ class AccountController extends Controller
             'amount'     => 'required|numeric|min:0',
             'memo'       => 'nullable|string|max:255',
         ]);
-    
+
         // 登録
         Account::create([
             'user_id'        => Auth::id(),
@@ -75,17 +75,25 @@ class AccountController extends Controller
             return  redirect()->back()->withErrors($errors);
         }
 
+        $account_category_id = $request->input('account_category_id', $account->account_category_id);
+        if ($account_category_id == 0) {
+            $errors = [
+                'error' => "account category must be selected.",
+            ];
+            return  redirect()->back()->withErrors($errors);
+        }
+
         $account->date = $request->input('date', $account->date);
         $account->subcategory_id = $request->input('subcategory_id', $account->subcategory_id);
         $account->amount = $price;
         $account->title = $request->input('title', $account->title);
+        $account->account_category_id = $account_category_id;
         $account->memo = $request->input('memo', $account->memo);
         $account->update();
 
         return redirect()->route('calendar.events.show', [
             'date' => \Carbon\Carbon::parse($account->date)->format('Y-m-d')
         ])->with('success', '更新しました');
-
     }
 
     public function delete(Request $request, $id)
@@ -101,6 +109,5 @@ class AccountController extends Controller
         return redirect()->route('calendar.events.show', [
             'date' => \Carbon\Carbon::parse($account->date)->format('Y-m-d')
         ])->with('success', '削除しました');
-
     }
 }
