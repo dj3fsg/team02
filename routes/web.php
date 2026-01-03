@@ -6,6 +6,7 @@ use App\Http\Controllers\DayController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,52 +29,65 @@ Route::get('/', function () {
     }
 });
 
-Route::get('/calendar/create', [ItemController::class, 'create']);
-Route::post('/calendar', [ItemController::class, 'store']);
-Route::get('/calendar/edit/{id}', [ItemController::class, 'edit']);
-// 更新用：url('calendar/update/{id}') に対して PUT で待ち受ける
-Route::put('/calendar/update/{id}', [ItemController::class, 'update']);
+Route::middleware('auth')->group(function () {
 
-// 削除用：url('calendar/delete/{id}') に対して DELETE で待ち受ける
-Route::delete('/calendar/delete/{id}', [ItemController::class, 'delete']);
+    // カレンダー（G04）
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
-Route::get('/calendar', [CalendarController::class, 'index'])
-    ->name('calendar.index');
+    // 当日詳細（G05）
+    Route::get('/calendar/events/{date}', [DayController::class, 'show'])->name('calendar.events.show');
 
-Route::get('/calendar/events/{date}', [DayController::class, 'show'])
-    ->name('calendar.events.show');
+    // 予定（Item）
+    Route::get('/calendar/create', [ItemController::class, 'create']);
 
-// 収支作成画面（表示）
-Route::get('/accounts/create', [AccountController::class, 'create'])
-    ->name('accounts.create');
+    Route::post('/calendar', [ItemController::class, 'store']);
 
-// 収支登録（POST）
-Route::post('/accounts', [AccountController::class, 'store'])
-    ->name('accounts.store');
+    Route::get('/calendar/edit/{id}', [ItemController::class, 'edit'])->name('items.edit');
+
+    Route::put('/calendar/update/{id}', [ItemController::class, 'update']);
+
+    Route::delete('/calendar/delete/{id}', [ItemController::class, 'delete']);
 
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    // 収支（Account）
+    Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');
 
-Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout']);
+    Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
 
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-// 編集画面
-Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
-// 更新処理
-Route::post('/users/{id}/update', [UserController::class, 'update'])->name('users.update');
-// 削除
-Route::post('/users/{id}/delete', [UserController::class, 'destroy'])->name('users.delete');
+    Route::get('/account/edit/{id}', [AccountController::class, 'edit'])->name('accounts.edit');
+
+    Route::put('/account/update/{id}', [AccountController::class, 'update'])->name('accounts.update');
+
+    Route::delete('/account/delete/{id}', [AccountController::class, 'delete'])->name('accounts.delete');
+
+    // ユーザー管理
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    
+    Route::post('/users/{id}/update', [UserController::class, 'update'])->name('users.update');
+    
+    Route::post('/users/{id}/delete', [UserController::class, 'destroy'])->name('users.delete');
+
+    // ログアウト
+    Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
+    Route::post('/message/update/{id}', [App\Http\Controllers\AccountController::class, 'Update'])->name('update');
+
+    Route::post('/message/delete/{id}', [App\Http\Controllers\AccountController::class, 'Delete'])->name('delete');
+});
 
 
 // Route::get('/accounts/{id}/edit', function () {
 //     return view('accounts.edit');
 // })->name('account_edit');
-Route::get('/accounts/{id}/edit', [App\Http\Controllers\AccountController::class, 'Edit']);
 
-Route::post('/message/update/{id}', [App\Http\Controllers\AccountController::class, 'Update'])->name('update');
 
-Route::post('/message/delete/{id}', [App\Http\Controllers\AccountController::class, 'Delete'])->name('delete');
 
-Route::get('/calendar/events/{date}', function () {
-    return "g05";
-})->name('g05');
+
+
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

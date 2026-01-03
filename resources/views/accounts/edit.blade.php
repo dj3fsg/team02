@@ -55,7 +55,8 @@
             <!-- <div class="d-grid gap-2 d-md-block"> -->
             <button type="submit" class="btn btn-primary" style="width:150px" formaction="{!! route('update', $account->id) !!}">更新する</button>
             <button type="submit" class="btn btn-danger" style="width:150px" formaction="{!! route('delete', $account->id) !!}">削除する</button>
-            <button type="submit" class="btn btn-light" style="width:150px" formmethod="GET" formaction="{!! route('g05', $account->date?->format('Y-m-d')) !!}">戻る</button>
+            <button type="button" class="btn btn-light" style="width:150px"onclick="history.back()">戻る</button>
+
         </div>
     </form>
 </div>

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 /*use App\Http\Controllers\CalendarController;*/
 use App\Models\Item;
+use Illuminate\Support\Facades\Auth;
 
 class ItemController extends Controller
 {
@@ -61,7 +62,7 @@ public function store(ItemStoreRequest $request)
         }
 
         // ステータス（HTMLの name="status_id" に合わせる）
-        $item->status_id = $request->has('status_id') ? 2 : 0; 
+        $item->status_id = $request->has('status_id') ? 2 : 1; 
 
         // ★ここで保存
         $item->save();
@@ -100,7 +101,7 @@ public function update(Request $request, $id)
     $item->title = $request->title;
     $item->location = $request->location;
     $item->memo = $request->memo;
-    $item->status_id = $request->has('status_id') ? 2 : 0;
+    $item->status_id = $request->has('status_id') ? 2 : 1;
 
     // all_dayチェックの有無で、使う値を明示的に分ける
     if ($request->has('all_day')) {
@@ -116,8 +117,10 @@ public function update(Request $request, $id)
     }
 
     $item->save();
-    return redirect('/calendar')->with('success', '更新しました');
-}
+    return redirect()->route('calendar.events.show', [
+            'date' => \Carbon\Carbon::parse($item->sche_start)->format('Y-m-d')
+        ])->with('success', '更新しました');
+    }
 
     public function delete($id)
     {
@@ -127,14 +130,22 @@ public function update(Request $request, $id)
     $item->status_id = 99;
     $item->save();
 
-    // 削除後にカレンダー一覧へリダイレクト
-    return redirect('/calendar')->with('success', '予定を削除しました');
+    // 削除後に当日詳細ー一覧へリダイレクト
+    return redirect()->route('calendar.events.show', [
+        'date' => \Carbon\Carbon::parse($item->sche_start)->format('Y-m-d')
+    ])->with('success', '削除しました');
     }
+
 
     public function edit($id){
        // 1) 編集対象のデータ（id）を取得
     $item = Item::where('id', $id) 
+<<<<<<< HEAD
         ->where('user_id', auth()->id()) // ★本人の予定だけ
+=======
+        ->where('user_id', Auth::id()) // ★本人の予定だけ
+         // ★本人の予定だけuser_id=1
+>>>>>>> 98bb8569e2e87dfe43b35add271fd62f7c5897f9
         ->where('status_id', '<>', 99)//削除済みのものは出さない
         ->firstOrFail();
 

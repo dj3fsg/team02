@@ -7,22 +7,31 @@ use Carbon\Carbon;
 
 class ItemStoreRequest extends FormRequest
 {
+    /**
+     * ユーザーがこのリクエストを行う権限があるかどうか
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * バリデーション前にデータを加工する
+     */
     protected function prepareForValidation()
     {
-        // データの加工を行う前に、必要なキーが存在するか確認。
         if ($this->filled(['sche_start_date'])) {
             try {
-                if ($this->boolean('chkAllday')) {
+                // 終了日が空なら開始日と同じにする（単発予定への配慮）
+                $endDateInput = $this->sche_end_date ?: $this->sche_start_date;
+                // boolean('all_day')は "on", "1", true などの値を真偽値に変換します
+                if ($this->boolean('chkAllday')) { 
                     $start = Carbon::parse($this->sche_start_date)->startOfDay();
-                    $end = Carbon::parse($this->sche_end_date ?? $this->sche_start_date)->addDay()->startOfDay();
+                    $end = Carbon::parse($endDateInput)->endOfDay();
                 } else {
-                    $start = Carbon::parse($this->sche_start_date . ' ' . $this->sche_start_time);
-                    $end = Carbon::parse($this->sche_start_date . ' ' . $this->sche_end_time);
+                    // 開始日時と終了日時をそれぞれ組み立てる
+                    $start = Carbon::parse($this->sche_start_date . ' ' . ($this->sche_start_time ?: '00:00:00'));
+                    $end = Carbon::parse($endDateInput . ' ' . ($this->sche_end_time ?: '23:59:59'));
                 }
 
                 $this->merge([
@@ -30,27 +39,34 @@ class ItemStoreRequest extends FormRequest
                     'sche_end'   => $end->toDateTimeString(),
                 ]);
             } catch (\Exception $e) {
-                // パース失敗時は何もしない（rulesのdateバリデーションで弾く）
+                // パース失敗時はバリデーションルールの 'date' で弾かれます
             }
         }
-
     }
 
+    /**
+     * バリデーションルール
+     */
     public function rules()
     {
         return [
-            // typeは 1(schedule) か 2(task) など、入力値と合わせる
-            'type'       => 'required', 
-            'title'      => 'required|string|max:255',
+            'type'           => 'required|string',
+            'title'          => 'required|string|max:255',
             
-            // 変換後の値に対するバリデーション
-            'sche_start' => 'required_if:type,1|nullable|date',
-            'sche_end'   => 'nullable|date|after_or_equal:sche_start',
+            // 入力フォームから直接送られてくる値
+            'sche_start_date' => 'required|date',
+            'sche_end_date'   => 'nullable|date|after_or_equal:sche_start_date',
+            
+            // prepareForValidationでmergeされた後の値
+            'sche_start'     => 'required_if:type,schedule|date',
+            'sche_end'       => 'nullable|date|after_or_equal:sche_start',
 
-            'sche_done'  => 'required_if:type,2|nullable|date',
+            'sche_done'      => 'required_if:type,task|nullable|date',
             
-            'memo'       => 'nullable|string|max:255',
-            'location'   => 'nullable|string|max:255',
+            'memo'           => 'nullable|string|max:255',
+            'location'       => 'nullable|string|max:255',
+            'repeat'         => 'nullable|integer',
+            'repeat_until'   => 'nullable|date|after_or_equal:sche_start_date',
         ];
     }
 }

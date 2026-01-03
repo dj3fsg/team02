@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\Account;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
 
 class DayController extends Controller
 {
     public function show($date)
     {
-        $kubun = [
-            2 => '収入',
-            3 => '支出',
+        $userId = Auth::id();
+
+        $subcategories = [
+            3 => '収入',
+            4 => '支出',
         ];
 
         $category = [
@@ -27,18 +31,31 @@ class DayController extends Controller
         $date = Carbon::parse($date);
 
         // 予定 / タスク
-        $items = Item::whereDate('sche_start', $date)->get();
+        $items = Item::where('user_id', $userId)
+            ->whereDate('sche_start', $date)
+            ->where('status_id', '<>', 99)
+            ->OrderBy('sche_start', 'asc')
+            ->get();
+
 
         // 収入 / 支出（一覧用）
-        $accounts = Account::whereDate('date', $date)->get();
+        $accounts = Account::where('user_id', $userId)
+            ->whereDate('date', $date)
+            ->where('status_id', '<>', 99)
+            ->get();
 
         // todayカード用 集計
-        $incomeTotal = Account::whereDate('date', $date)
-            ->where('subcategory_id', 3) // 収入
+        $incomeTotal = Account::where('user_id', $userId)
+            ->whereDate('date', $date)
+            ->where('status_id', '<>', 99)
+            ->where('subcategory_id', 3)
             ->sum('amount');
 
-        $expenseTotal = Account::whereDate('date', $date)
-            ->where('subcategory_id', 2) // 支出
+
+        $expenseTotal = Account::where('user_id', $userId)
+            ->whereDate('date', $date)
+            ->where('status_id', '<>', 99)
+            ->where('subcategory_id', 4)
             ->sum('amount');
 
         return view('calendar.show', compact(
@@ -47,7 +64,7 @@ class DayController extends Controller
             'accounts',
             'incomeTotal',
             'expenseTotal',
-            'kubun',
+            'subcategories',
             'category'
 
         ));

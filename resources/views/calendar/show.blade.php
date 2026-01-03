@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G05 当日詳細一覧</title>
     <link rel="stylesheet" href="{{ asset('css/day.css') }}">
-
+    @include('parts.head')
 </head>
 <body>
+    @include('parts.header')
 <div class="page-container">
 <div class="page-layout">
 
@@ -38,8 +39,14 @@
     @forelse ($items as $item)
       <tr>
         <td>
-          {{ optional($item->sche_start)->format('H:i') }}  
-          {{ optional($item->sche_end)->format('H:i') }}
+            @if ($item->sche_start)
+              {{ \Carbon\Carbon::parse($item->sche_start)->format('H:i') }}
+              @if ($item->sche_end)
+                〜 {{ \Carbon\Carbon::parse($item->sche_end)->format('H:i') }}
+              @endif
+            @else
+              -
+            @endif
         </td>
 
         <td>{{ $item->title }}</td>
@@ -67,10 +74,11 @@
         {{-- 編集のみ --}}
         <td>
           <a
-            href="{{ url('/calendar/' . $item->id . '/edit') }}?date={{ $date->format('Y-m-d') }}"
+            href="{{ route('items.edit', $item->id) }}"
             class="btn-edit"
           >
             編集
+          </a>
           </a>
         </td>
       </tr>
@@ -104,20 +112,20 @@
     <tbody>
     @forelse ($accounts as $account)
       <tr>
-        <td>{{ $kubun[$account->type_id] }}</td>
+        <td>{{ $subcategories[$account->subcategory_id] }}</td>
 
         <td>{{ number_format($account->amount) }}円</td>
 
         <td>{{ $account->title }}</td>
 
         {{-- カテゴリ（仮） --}}
-        <td>{{ $category[$account->subcategory_id] }}</td>
+        <td>{{ $category[$account->account_category_id] }}</td>
 
         <td>{{ $account->memo }}</td>
 
-        <td>
+        <td class="edit-cell">
           <a
-            href="{{ url('/accounts/' . $account->id . '/edit') }}?date={{ $date->format('Y-m-d') }}"
+            href="{{ route('accounts.edit', $account->id) }}"
             class="btn-edit"
           >
             編集

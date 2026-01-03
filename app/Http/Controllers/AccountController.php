@@ -20,17 +20,18 @@ class AccountController extends Controller
         // バリデーション
         $request->validate([
             'date'       => 'required|date',
-            'subcategory_id' => 'required|integer',
+            'account_category_id' => 'required|integer',
             'amount'     => 'required|numeric|min:0',
             'memo'       => 'nullable|string|max:255',
         ]);
-
+    
         // 登録
         Account::create([
-            // 'user_id'        => Auth::id(),
-            'user_id'        => 1,
+            'user_id'        => Auth::id(),
+            //'user_id'        => 1,
+            'account_category_id' => $request->account_category_id,
             'subcategory_id' => $request->subcategory_id,
-            'type_id'        => $request->type,
+            'type_id'        => null,
             'status_id'      => 1, // 仮：有効
             'date'           => $request->date,
             'title'          => $request->title,
@@ -43,7 +44,7 @@ class AccountController extends Controller
     }
 
     //
-    public function Edit($id)
+    public function edit($id)
     {
         $account = Account::find($id);
         return view('accounts.edit', compact('account'));
@@ -81,7 +82,10 @@ class AccountController extends Controller
         $account->memo = $request->input('memo', $account->memo);
         $account->update();
 
-        return redirect()->route('g05', ['date' => $account->date->format('Y-m-d')]);
+        return redirect()->route('calendar.events.show', [
+            'date' => \Carbon\Carbon::parse($account->date)->format('Y-m-d')
+        ])->with('success', '更新しました');
+
     }
 
     public function delete(Request $request, $id)
@@ -94,6 +98,9 @@ class AccountController extends Controller
         $account->status_id = 99;
         $account->update();
 
-        return redirect()->route('g05', ['date' => $account->date->format('Y-m-d')]);
+        return redirect()->route('calendar.events.show', [
+            'date' => \Carbon\Carbon::parse($account->date)->format('Y-m-d')
+        ])->with('success', '削除しました');
+
     }
 }
