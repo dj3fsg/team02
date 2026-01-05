@@ -1,6 +1,8 @@
 /* =========================
-   全体レイアウト
+   Base
 ========================= */
+
+* { box-sizing: border-box; }
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont,
@@ -8,58 +10,71 @@ body {
                Meiryo, sans-serif;
   color: #222;
   font-size: 15px;
+  margin: 0;
 }
 
 .page-container {
-  max-width: 1080px;   
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 24px 40px;
 }
 
 h1 {
   text-align: center;
-  margin: 24px 0 20px;
+  margin: 24px 0 16px;
   font-size: 30px;
 }
 
 h2 {
   font-size: 20px;
-  margin: 28px 0 10px;
+  margin: 26px 0 10px;
   padding-bottom: 6px;
-  border-bottom: 0.5px solid #999;
+  border-bottom: 1px solid #bbb;
   text-align: center;
 }
 
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 16px 0;
+}
+
 /* =========================
-   左＋右レイアウト
+   Layout
 ========================= */
 
 .page-layout {
   display: flex;
-  gap: 32px;
+  gap: 28px;
   align-items: flex-start;
 }
 
 .main-area {
   flex: 1;
+  min-width: 0; /* これがないとテーブルが横に押し出されがち */
 }
 
 /* =========================
-   スクロール枠
+   Scroll box
 ========================= */
 
 .scroll-box {
-  max-height: 180px;
-  overflow-y: auto;
-  padding-right: 8px;
-}
-.account-scroll {
-  width: 820px;   
+  max-height: 220px;
+  overflow: auto; /* 縦も横も必要ならスクロール */
+  padding-right: 6px;
+  border: 1px solid #eee;
+  border-radius: 10px;
 }
 
+/* account-scroll の width 固定は崩れ原因なので無効化 */
+.account-scroll {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+}
 
 /* =========================
-   テーブル共通
+   Table common
 ========================= */
 
 table {
@@ -68,156 +83,113 @@ table {
   table-layout: fixed;
 }
 
+th, td {
+  padding: 8px 8px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
 th {
   text-align: left;
-  vertical-align: center;
-  line-height: 1.6;
-  font-weight: bold;
-  font-size: 15px;
-  padding: 3px 4px;
-  border-bottom: 1px solid #ccc;
+  font-weight: 700;
   background-color: rgb(249, 241, 231);
+  position: sticky;   /* スクロールしても見出し固定 */
+  top: 0;
+  z-index: 1;
 }
 
 td {
-  text-align: left;
-  vertical-align: middle;
-  line-height: 1.6;
-  font-size: 15px;
-  padding: 6px 4px;
+  line-height: 1.5;
   word-break: break-word;
 }
 
+/* 行ホバー */
+tbody tr:hover td {
+  background: #fafafa;
+}
+
 /* =========================
-   予定 / タスク
+   Task table (予定/タスク)
 ========================= */
 
+/* 時間 */
 .task-table th:nth-child(1),
-.task-table td:nth-child(1) { width: 90px;
-                              text-align: center; }
-
-
-.task-table th:nth-child(2),
-.task-table td:nth-child(2) { width: 22%; }
-
-.task-table th:nth-child(3),
-.task-table td:nth-child(3) { width: 70px; 
-                              text-align: center; }
-
-.task-table th:nth-child(4),
-.task-table td:nth-child(4) { width: 60px;
-                              text-align: center; }
-
-.task-table th:nth-child(5),
-.task-table td:nth-child(5) { width: 90px;
-                              text-align: center; }
-
-.task-table th:nth-child(6),
-.task-table td:nth-child(6) { width: auto; }
-
-.task-table th:nth-child(7),
-.task-table td:nth-child(7) {
-  width: 70px;
+.task-table td:nth-child(1) {
+  width: 92px;
   text-align: center;
-}
-/* カテゴリ・状態・場所をグループ化 */
-.task-table td:nth-child(3),
-.task-table td:nth-child(4),
-.task-table td:nth-child(5) {
-  border-left: 1px solid #eee;
-  padding-left: 8px;
-}
-
-
-/* =========================
-   収入 / 支出
-========================= */
-
-/* 種別（収入 / 支出） */
-.account-table th:nth-child(1),
-.account-table td:nth-child(1) {
-  width: 30px;
-  text-align: center;
-}
-
-/* 金額 */
-.account-table th:nth-child(2),
-.account-table td:nth-child(2) {
-  width: 70px;
-  text-align: right;
 }
 
 /* タイトル */
-.account-table th:nth-child(3),
-.account-table td:nth-child(3) {
-  width: 12%;
-  text-align: center;
+.task-table th:nth-child(2),
+.task-table td:nth-child(2) {
+  width: 22%;
 }
 
 /* カテゴリ */
-.account-table th:nth-child(4),
-.account-table td:nth-child(4) {
-  width: 100px;
+.task-table th:nth-child(3),
+.task-table td:nth-child(3) {
+  width: 78px;
+  text-align: center;
+}
+
+/* 状態 */
+.task-table th:nth-child(4),
+.task-table td:nth-child(4) {
+  width: 62px;
+  text-align: center;
+}
+
+/* 場所 */
+.task-table th:nth-child(5),
+.task-table td:nth-child(5) {
+  width: 90px;
   text-align: center;
 }
 
 /* メモ */
-.account-table th:nth-child(5),
-.account-table td:nth-child(5) {
-  width: 180px;
-  max-width: 180px;
-  word-break: break-word;
+.task-table th:nth-child(6),
+.task-table td:nth-child(6) {
+  width: auto;
 }
 
 /* 編集 */
-.account-table th:nth-child(6),
-.account-table td:nth-child(6) {
-  width: 30px;
+.task-table th:nth-child(7),
+.task-table td:nth-child(7) {
+  width: 84px;
   text-align: center;
 }
-/* カテゴリ列 */
-.account-table td:nth-child(4) {
-  border-left: 1px solid #eee;
-  padding-left: 8px;
-  width: 50px;
+
+/* 区切り線（見やすさ） */
+.task-table td:nth-child(6) {
+  border-left: 2px solid #e7e7e7;
+  padding-left: 10px;
+}
+
+.task-table td:nth-child(7) {
+  border-left: 1px solid #3498db;
 }
 
 /* =========================
-   編集ボタン
-======================== */
-
-.btn-edit {
-    display: inline-block;
-    padding: 4px 10px;
-    border: 1px solid #333;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: 12px;
-}
-
-.btn-edit:hover {
-  background: #eee;
-}
-.edit-cell {
-    white-space: nowrap;
-    width: 80px;
-    text-align: center;
-}
-/* =========================
-   today カード
+   Account area (収支 + today)
 ========================= */
 
+.account-area {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
 .today-card {
-  width: 150px;
-  padding: 5px;
+  flex: 0 0 220px;
+  padding: 14px 14px 8px;
   border: 1px solid #000;
-  margin-top: 5px;
-  background-color: rgb(244, 228, 207);
+  border-radius: 12px;
+  background-color: #b9ddf4;
 }
 
 .today-card h3 {
   text-align: center;
-  margin-bottom: 8px;
+  margin: 0 0 10px;
   font-size: 22px;
 }
 
@@ -226,44 +198,300 @@ td {
   margin-bottom: 10px;
   font-size: 14px;
 }
+
+.today-item span {
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
 /* =========================
-   ラインで区切る
+   Account table (収入/支出)
 ========================= */
 
-/* 予定 / タスク */
-.task-table td:nth-child(6) {
-  border-left: 2px solid #e0e0e0;
-  padding-left: 10px;
-  color: #333;
+/* 種別 */
+.account-table th:nth-child(1),
+.account-table td:nth-child(1) {
+  width: 72px;       /* 30pxは無理なので増やす */
+  text-align: center;
+  white-space: nowrap;
 }
 
-/* 収入 / 支出 */
-.account-table td:nth-child(5) {
-  border-left: 2px solid #e0e0e0;
-  padding-left: 10px;
-  color: #333;
+/* 金額 */
+.account-table th:nth-child(2),
+.account-table td:nth-child(2) {
+  width: 110px;
+  text-align: right;
+  white-space: nowrap;
 }
-/* 編集列：操作エリアとして区切る */
-.task-table td:nth-child(7),
+
+/* タイトル */
+.account-table th:nth-child(3),
+.account-table td:nth-child(3) {
+  width: 18%;
+}
+
+/* カテゴリ */
+.account-table th:nth-child(4),
+.account-table td:nth-child(4) {
+  width: 110px;
+  text-align: center;
+}
+
+/* メモ */
+.account-table th:nth-child(5),
+.account-table td:nth-child(5) {
+  width: auto;
+}
+
+/* 編集 */
+.account-table th:nth-child(6),
+.account-table td:nth-child(6) {
+  width: 84px;
+  text-align: center;
+}
+
+/* 区切り線（見やすさ） */
+.account-table td:nth-child(5) {
+  border-left: 2px solid #e7e7e7;
+  padding-left: 10px;
+}
+
 .account-table td:nth-child(6) {
   border-left: 1px solid #ddd;
-  padding-left: 8px;
 }
+
 /* =========================
-   収支 + today 横並び
+   Buttons
 ========================= */
 
-.account-area {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
+.btn-edit {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid #333;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 12px;
+  color: #222;
+  background: #fff;
 }
 
-/* todayカードは固定幅 */
-.today-card {
-  width: 220px;
-  padding: 14px;
-  border: 1px solid #000;
+.btn-edit:hover {
+  background: #f0f0f0;
 }
 
+.edit-cell {
+  white-space: nowrap;
+  text-align: center;
+}
 
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 960px) {
+  .page-container { padding: 0 14px 34px; }
+  .page-layout { gap: 18px; }
+  .today-card { flex-basis: 200px; }
+}
+
+@media (max-width: 760px) {
+  .page-layout { display: block; }
+  .account-area { display: block; }
+
+  .today-card {
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .scroll-box {
+    max-height: 260px;
+  }
+}
+/* =========================
+   FIX: 100%での崩れ対策（メモ列が伸びすぎ問題）
+========================= */
+
+/* 横スクロールは基本出さない（見た目崩れ防止） */
+.scroll-box {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* テーブル：固定レイアウトは維持しつつ、列の伸びを制御 */
+.task-table th:nth-child(2),
+.task-table td:nth-child(2) {
+  width: 34%; /* タイトルを広めに */
+}
+
+.task-table th:nth-child(6),
+.task-table td:nth-child(6) {
+  width: 38%;          /* メモ列に上限を与える */
+  max-width: 420px;    /* ここが効く（巨大空白の抑制） */
+  white-space: normal; /* 折り返す */
+  overflow-wrap: anywhere;
+}
+
+/* 長文タイトルも折り返す */
+.task-table td:nth-child(2) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* ついで：場所が短いなら詰める */
+.task-table th:nth-child(5),
+.task-table td:nth-child(5) {
+  width: 80px;
+}
+
+/* =========================
+   todayカード：収入=緑 支出=赤
+========================= */
+
+.today-item.income span {
+  color: #118a2a;
+}
+
+.today-item.expense span {
+  color: #c21c1c;
+}
+/* =========================
+   仕上げ調整（密度80% / 仕切り線復活 / 余白調整）
+========================= */
+
+/* 1) 全体ちょい小さめ（80%感） */
+.page-container { max-width: 980px; }
+h1 { font-size: 28px; margin: 34px 0 18px; }  /* ←日付を少し下げる */
+h2 { font-size: 18px; margin: 22px 0 10px; }
+
+/* 2) 日付とヘッダー（上部）を離す：ヘッダー直下の余白を増やす */
+body { padding-top: 8px; } /* headerがfixedじゃないなら効く。効かなければ下の3)で調整 */
+
+/* 3) page-layoutに上余白（確実に効く） */
+.page-layout { margin-top: 14px; }
+
+/* 4) セクションの上下の線（hr）を消す */
+hr { display: none; }
+
+/* 5) テーブルを少しコンパクトに */
+th, td { padding: 7px 8px; }
+th { font-size: 14px; }
+td { font-size: 14px; }
+
+/* 6) もともとの“グレーの仕切り線”を復活（縦線） */
+.task-table th,
+.task-table td,
+.account-table th,
+.account-table td {
+  border-right: 1px solid #e6e6e6;
+}
+.task-table th:last-child,
+.task-table td:last-child,
+.account-table th:last-child,
+.account-table td:last-child {
+  border-right: none;
+}
+
+/* 7) メモ列の巨大空白を抑えつつ、見た目の区切りも維持 */
+.task-table td:nth-child(6),
+.account-table td:nth-child(5) {
+  border-left: 1px solid #e0e0e0;   /* 太すぎない線に */
+  padding-left: 10px;
+}
+
+/* 8) スクロール枠を少しスリムに */
+.scroll-box { max-height: 200px; }
+
+/* 9) todayカードのサイズを少しだけ小さく */
+.today-card { flex-basis: 210px; padding: 12px 12px 8px; }
+.today-card h3 { font-size: 20px; }
+.today-item span { font-size: 15px; }
+/* =========================
+   最終仕上げ：少しだけ小さく＆下線を消す
+========================= */
+
+/* 全体をもう一段だけコンパクトに */
+body { font-size: 14px; }
+h1 { font-size: 26px; }
+h2 { font-size: 17px; }
+th { font-size: 13px; }
+td { font-size: 13px; }
+.btn-edit { padding: 5px 10px; font-size: 11px; }
+
+/* “一覧の下の線”を消す（行の区切り線） */
+th, td { border-bottom: none; }
+
+/* スクロール枠の外枠もいらないなら消す */
+.scroll-box {
+  border: none;
+  border-radius: 12px;
+}
+
+/* ただし縦の仕切り線は残す（見やすさ維持） */
+.task-table th,
+.task-table td,
+.account-table th,
+.account-table td {
+  border-right: 1px solid #e6e6e6;
+}
+.task-table th:last-child,
+.task-table td:last-child,
+.account-table th:last-child,
+.account-table td:last-child {
+  border-right: none;
+}
+/* =========================
+   最終微調整 v2
+========================= */
+
+/* 1) 全体をもう少し小さく */
+.page-container { max-width: 940px; }
+body { font-size: 13px; }
+th { font-size: 12px; }
+td { font-size: 12px; }
+h2 { font-size: 16px; }
+
+/* ボタンも少しだけ小さく */
+.btn-edit { padding: 4px 9px; font-size: 10.5px; }
+
+/* 2) 収支のカテゴリ列（4列目）を中央揃えに固定 */
+.account-table th:nth-child(4),
+.account-table td:nth-child(4) {
+  text-align: center !important;
+}
+
+/* 3) 日付（h1）のフォント違和感を潰す
+   header側のCSSに負けないように、明示的に同じ系統に固定する */
+h1 {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", "Hiragino Kaku Gothic ProN",
+               Meiryo, sans-serif !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 25px;
+  margin: 36px 0 16px;
+}
+/* =========================
+   微調整：サイズ & 収支タイトル中央揃え
+========================= */
+
+/* 全体をほんの一段だけ小さく（やりすぎない） */
+.page-container { max-width: 920px; }
+body { font-size: 12.5px; }
+th { font-size: 12px; }
+td { font-size: 12px; }
+h1 { font-size: 24px; }
+h2 { font-size: 15.5px; }
+
+/* 編集ボタンもバランス調整 */
+.btn-edit {
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+/* ★ 収支の「タイトル列（3列目）」を中央揃えに */
+.account-table th:nth-child(3),
+.account-table td:nth-child(3) {
+  text-align: center !important;
+}

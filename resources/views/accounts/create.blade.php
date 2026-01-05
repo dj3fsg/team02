@@ -129,11 +129,12 @@
             </div>
 
 
+
             <!-- カテゴリ -->
             <div class="form-group">
                 <label>カテゴリ</label>
                 <select name="account_category_id">
-                    <option value="0">選択してください</option>
+                    <option value="">選択してください</option>
                     <option value="1">食費</option>
                     <option value="2">日用品</option>
                     <option value="3">交通費</option>

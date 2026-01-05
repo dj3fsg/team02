@@ -75,6 +75,7 @@ class CalendarController extends Controller
             'items'       => $items,
             'accounts'    => $accounts,
             'subcategory' => $subcategories,
+            'baseDate' => $baseDate,
         ]);
     }
 }
