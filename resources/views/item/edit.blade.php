@@ -13,19 +13,6 @@
     <form method="POST" action="{{ url('calendar/update/' . $item->id) }}" onsubmit="return confirm('この予定を更新してもよろしいですか？');">
       @csrf
       @method('PUT')
-
-      <div class="row mt-4 mb-4 align-items-center">
-        <div class="col text-start">
-          <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
-        </div>
-        <div class="col text-center">
-          <button type="button" class="btn btn-danger" onclick="deleteItem();">削除</button>
-        </div>
-        <div class="col text-end">
-          <button type="submit" class="btn btn-primary">更新</button>
-        </div>
-      </div>
-
       <div class="mb-3">
         <label for="title" class="form-label">タイトル</label>
         <input type="text" id="title" name="title" class="form-control @error('title') is-invalid @enderror" 
@@ -66,6 +53,7 @@
            value="{{ old('sche_end_time', $item->sche_end ? date('H:i', strtotime($item->sche_end)) : '') }}">
   </div>
 </div>
+</div>
 
       <div class="mb-3">
         <label for="location" class="form-label">場所</label>
@@ -101,6 +89,17 @@
       }
     }
   </script>
+  <div class="row mt-4 mb-4 align-items-center">
+        <div class="col text-start">
+          <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
+        </div>
+        <div class="col text-center">
+          <button type="button" class="btn btn-danger" onclick="deleteItem();">削除</button>
+        </div>
+        <div class="col text-end">
+          <button type="submit" class="btn btn-primary">更新</button>
+        </div>
+      </div>
   <script src="{{ asset('js/calendar.js') }}"></script>
 </body>
 </html>

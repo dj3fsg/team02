@@ -12,7 +12,6 @@
 
 <body>
     @include('parts.header')
-
     <div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
         <h1 class="h2">予定作成</h1>
     </div>
@@ -29,18 +28,7 @@
         @endif
 
         <form method="POST" action="/calendar">
-            @csrf
-
-            <div class="row mt-4 mb-4 align-items-center">
-                <div class="col text-start">
-                    <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
-                </div>
-                <div class="col text-center">
-                </div>
-                <div class="col text-end">
-                    <button type="submit" class="btn btn-primary">登録</button>
-                </div>
-            </div>
+            @csrf      
 
             <div class="mb-3">
                 <label class="form-label">種別</label><br>
@@ -128,6 +116,16 @@
             </div>
         </form>
     </div>
+     <div class="row mt-4 mb-4 align-items-center">
+                <div class="col text-start">
+                    <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
+                </div>
+                <div class="col text-center">
+                </div>
+                <div class="col text-end">
+                    <button type="submit" class="btn btn-primary">登録</button>
+                </div>
+            </div>
     <script src="{{ asset('js/calendar.js') }}"></script>
 </body>
 
