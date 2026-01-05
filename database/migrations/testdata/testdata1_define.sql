@@ -36,6 +36,15 @@ INSERT INTO `statuses` (`id`, `status`, `desc`) VALUES
 (2, 'done', '完了'),
 (99, 'removed', '削除');
 
+INSERT INTO `account_categories` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, '食費', NULL, NULL),
+(2, '日用品', NULL, NULL),
+(3, '交通費', NULL, NULL),
+(4, '家賃', NULL, NULL),
+(5, '娯楽', NULL, NULL),
+(6, '給料', NULL, NULL),
+(9, 'その他', NULL, NULL);
+
 -- 1st user (email:webapp002@tech/pass:12345678)
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `role_id`, `created_at`, `updated_at`) VALUES
 ('1', 'webapp002', 'webapp002@tech', NULL, '$2y$12$OTS60mFTbu51gBEJL.wymuJjHmZV3mR3pQAd58T01vxh2PyMKKNiy', NULL, '99', NULL, NULL);
