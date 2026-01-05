@@ -8,7 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
-    <link rel="stylesheet" href="{{ asset('css/calendar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/calendar.css') }}?v={{ filemtime(public_path('css/calendar.css')) }}">
+
     <title>カレンダー</title>
         
     @include('parts.head')
@@ -36,7 +37,6 @@
                 <ul id="side-accounts"></ul>
             </section>
         </aside>
-
     </div>
 </div>
 
@@ -51,6 +51,8 @@
 
         let clickTimer = null;
         let clickedDate = null;
+        let isFirstRender = true;
+
 
         // ==========================
         // 祝日データ取得 → カレンダー生成
@@ -67,12 +69,29 @@
                     timeZone: 'local',
                     height: 'auto',
                     fixedWeekCount: false,
+                    initialDate: "{{ $baseDate->format('Y-m-d') }}",
+
 
                     headerToolbar: {
                         left: 'prev',
                         center: 'title',
                         right: 'next'
                     },
+                    
+                    datesSet: function(info) {
+                    // 初回表示はリロードしない（無限ループ防止）
+                    if (isFirstRender) {
+                        isFirstRender = false;
+                        return;
+                    }
+
+                    // 表示している「月」を安定して取得（ズレ防止で中心日を使う）
+                    const mid = new Date(info.start.getTime() + (info.end - info.start) / 2);
+                    const y = mid.getFullYear();
+                    const m = String(mid.getMonth() + 1).padStart(2, '0');
+
+                    window.location.href = `/calendar?date=${y}-${m}-01`;
+                },
 
                     // 「日」を消して数字だけ表示
                     dayCellContent: function(arg) {
