@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Account;
+use App\Models\Account_category;
 use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
@@ -47,7 +48,8 @@ class AccountController extends Controller
     public function edit($id)
     {
         $account = Account::find($id);
-        return view('accounts.edit', compact('account'));
+        $account_categories = Account_category::all();
+        return view('accounts.edit', compact('account', 'account_categories'));
     }
 
     public function update(Request $request, $id)

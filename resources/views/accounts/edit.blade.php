@@ -52,13 +52,9 @@
                     <div class="form-group">
                         <select name="account_category_id" style="width: 100%; padding: 0;">
                             <option value="0">選択してください</option>
-                            <option value="1" {{ $account->account_category_id == 1 ? 'selected' : '' }}>食費</option>
-                            <option value="2" {{ $account->account_category_id == 2 ? 'selected' : '' }}>日用品</option>
-                            <option value="3" {{ $account->account_category_id == 3 ? 'selected' : '' }}>交通費</option>
-                            <option value="4" {{ $account->account_category_id == 4 ? 'selected' : '' }}>家賃</option>
-                            <option value="5" {{ $account->account_category_id == 5 ? 'selected' : '' }}>娯楽</option>
-                            <option value="6" {{ $account->account_category_id == 6 ? 'selected' : '' }}>給料</option>
-                            <option value="9" {{ $account->account_category_id == 9 ? 'selected' : '' }}>その他</option>
+                            @foreach ($account_categories as $account_category)
+                            <option value="{{$account_category->id}}" {{ $account->account_category_id == $account_category->id ? 'selected' : '' }}>{{$account_category->name}}</option>
+                            @endforeach
                         </select>
                     </div>
                 </td>
