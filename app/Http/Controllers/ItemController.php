@@ -23,7 +23,6 @@ class ItemController extends Controller
   
 public function store(ItemStoreRequest $request)
 {
-    // 一旦、Requestから直接値を取得するように書き換えてください（確実に通すため）
     $validated = $request->validated(); 
 
     // 1. 日時の結合（HTMLのname属性に合わせる）
@@ -38,15 +37,15 @@ public function store(ItemStoreRequest $request)
                 ? \Carbon\Carbon::parse($request->repeat_until)->endOfDay() 
                 : $currentStart->copy();
 
-    $maxLoops = 100;
+    $maxLoops = 1200;//3年先までを制限にするという想定
     $count = 0;
 
     do {
         $item = new Item();
         $item->title = $request->title;
-        $item->user_id = auth()->id() ?? 1;
-        $item->location = $request->location; // これも忘れずに
-        $item->memo = $request->memo;         // これも忘れずに
+        $item->user_id = auth()->id();
+        $item->location = $request->location; 
+        $item->memo = $request->memo;
 
         // スケジュールかタスクかの判定
         if ($request->type === 'schedule') {
@@ -141,8 +140,12 @@ public function update(Request $request, $id)
     public function edit($id){
        // 1) 編集対象のデータ（id）を取得
     $item = Item::where('id', $id) 
+<<<<<<< HEAD
+        ->where('user_id', auth()->id()) // ★本人の予定だけ
+=======
         ->where('user_id', Auth::id()) // ★本人の予定だけ
          // ★本人の予定だけuser_id=1
+>>>>>>> 98bb8569e2e87dfe43b35add271fd62f7c5897f9
         ->where('status_id', '<>', 99)//削除済みのものは出さない
         ->firstOrFail();
 

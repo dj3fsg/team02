@@ -28,7 +28,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/calendar'; //ログイン後はカレンダーへ'/home';
+    protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -66,7 +66,6 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'role_id' => 0,
             'password' => Hash::make($data['password']),
         ]);
     }
