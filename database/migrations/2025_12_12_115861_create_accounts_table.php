@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('status_id')->constrained();
             $table->date('date')->nullable(true);
             $table->string('title', 255)->nullable(true);
-            $table->decimal('amount', total: 8, places: 2)->nullable(true);
+            $table->decimal('amount', total: 12, places: 2)->nullable(true);
             $table->string('memo', 255)->nullable(true);
             $table->timestamps();
 
