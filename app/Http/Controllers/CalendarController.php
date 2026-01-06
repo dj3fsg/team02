@@ -68,6 +68,16 @@ class CalendarController extends Controller
             3 => '収入',
         ];
 
+        $incomeTotalMonth = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('subcategory_id', 3) // 収入
+            ->sum('amount');
+
+        $expenseTotalMonth = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('subcategory_id', 4) // 支出
+            ->sum('amount');
+        $netMonth = $incomeTotalMonth - $expenseTotalMonth;
+
+
         return view('calendar.index', [
             'itemCounts'  => $itemCounts,
             'incomeSums'  => $incomeSums,
@@ -76,6 +86,7 @@ class CalendarController extends Controller
             'accounts'    => $accounts,
             'subcategory' => $subcategories,
             'baseDate' => $baseDate,
+            'netMonth' => $netMonth,
         ]);
     }
 }
