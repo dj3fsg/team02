@@ -140,12 +140,7 @@ public function update(Request $request, $id)
     public function edit($id){
        // 1) 編集対象のデータ（id）を取得
     $item = Item::where('id', $id) 
-<<<<<<< HEAD
         ->where('user_id', auth()->id()) // ★本人の予定だけ
-=======
-        ->where('user_id', Auth::id()) // ★本人の予定だけ
-         // ★本人の予定だけuser_id=1
->>>>>>> 98bb8569e2e87dfe43b35add271fd62f7c5897f9
         ->where('status_id', '<>', 99)//削除済みのものは出さない
         ->firstOrFail();
 
