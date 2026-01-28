@@ -67,6 +67,8 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            /*権限IDの登録 現状は*/
+            'role_id'=> 0,
         ]);
     }
 }
