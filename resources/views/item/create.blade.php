@@ -114,9 +114,7 @@
                     <input type="checkbox" name="status_id" value="2" class="form-check-input" {{ old('status_id') == 2 ? 'checked' : '' }}> 完了にする
                 </label>
             </div>
-        </form>
-    </div>
-     <div class="row mt-4 mb-4 align-items-center">
+            <div class="row mt-4 mb-4 align-items-center">
                 <div class="col text-start">
                     <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
                 </div>
@@ -126,6 +124,9 @@
                     <button type="submit" class="btn btn-primary">登録</button>
                 </div>
             </div>
+        </form>
+    </div>
+     
     <script src="{{ asset('js/calendar.js') }}"></script>
 </body>
 
