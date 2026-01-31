@@ -236,7 +236,13 @@
                 // 予定
                 const itemList = document.getElementById('side-items');
                 itemList.innerHTML = '';
-                const todayItems = items.filter(i => i.sche_start.startsWith(dateStr));
+                const today = new Date(dateStr + 'T00:00:00');
+
+                const todayItems = items.filter(i => {
+                const start = new Date(i.sche_start.replace(' ', 'T'));
+                const end   = i.sche_end ? new Date(i.sche_end.replace(' ', 'T')) : start;
+                return today >= start && today <= end;
+                });
 
                 if (todayItems.length === 0) {
                     itemList.innerHTML = '<li>予定はありません</li>';
