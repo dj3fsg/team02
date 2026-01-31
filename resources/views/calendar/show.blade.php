@@ -41,16 +41,7 @@
             <tbody>
             @forelse ($items as $item)
               <tr>
-                <td>
-                  @if ($item->sche_start)
-                    {{ \Carbon\Carbon::parse($item->sche_start)->format('H:i') }}
-                    @if ($item->sche_end)
-                      〜 {{ \Carbon\Carbon::parse($item->sche_end)->format('H:i') }}
-                    @endif
-                  @else
-                    -
-                  @endif
-                </td>
+                <td>{{ $item->display_time }}</td>
 
                 <td>{{ $item->title }}</td>
 

@@ -13,7 +13,6 @@ class CalendarController extends Controller
 {
     public function index(Request $request)
     {
-        // 基準日（指定がなければ今日）
         $userId = Auth::id();
 
         $baseDate = $request->date
@@ -23,15 +22,29 @@ class CalendarController extends Controller
         $startOfMonth = $baseDate->copy()->startOfMonth();
         $endOfMonth   = $baseDate->copy()->endOfMonth();
 
-        // 予定件数（日別）
-        $itemCounts = Item::where('user_id', $userId)
-            ->whereBetween('sche_start', [$startOfMonth, $endOfMonth])
+        // 月内に「重なる」予定を全部取る（重要）
+        $itemsInMonth = Item::where('user_id', $userId)
             ->where('status_id', '<>', 99)
-            ->selectRaw('DATE(sche_start) as date, COUNT(*) as count')
-            ->groupBy('date')
-            ->pluck('count', 'date');
+            ->whereDate('sche_start', '<=', $endOfMonth)
+            ->whereDate('sche_end', '>=', $startOfMonth)
+            ->get();
 
-        // 支出合計（日別） subcategory_id = 4
+        // 日別件数（期間を各日に展開してカウント）
+        $itemCounts = [];
+        foreach ($itemsInMonth as $item) {
+            $s = Carbon::parse($item->sche_start)->startOfDay();
+            $e = Carbon::parse($item->sche_end)->startOfDay();
+
+            $from = $s->copy()->max($startOfMonth);
+            $to   = $e->copy()->min($endOfMonth);
+
+            foreach (\Carbon\CarbonPeriod::create($from, $to) as $d) {
+                $key = $d->toDateString();
+                $itemCounts[$key] = ($itemCounts[$key] ?? 0) + 1;
+            }
+        }
+
+        // 支出合計（日別）
         $expenseSums = Account::where('user_id', $userId)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->where('status_id', '<>', 99)
@@ -40,7 +53,7 @@ class CalendarController extends Controller
             ->groupBy('date')
             ->pluck('sum', 'date');
 
-        // 収入合計（日別） subcategory_id = 3
+        // 収入合計（日別）
         $incomeSums = Account::where('user_id', $userId)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->where('status_id', '<>', 99)
@@ -49,12 +62,18 @@ class CalendarController extends Controller
             ->groupBy('date')
             ->pluck('sum', 'date');
 
-        // 月内の予定（右サイド用）
-        $items = Item::select('id', 'title', 'sche_start', 'status_id', 'subcategory_id')
-            ->where('user_id', $userId)
-            ->whereBetween('sche_start', [$startOfMonth, $endOfMonth])
-            ->where('status_id', '<>', 99)
-            ->get();
+        // 右サイド用：月内の予定（必要なカラムだけ）
+        $items = $itemsInMonth->map(function ($item) {
+            return (object)[
+                'id' => $item->id,
+                'title' => $item->title,
+                'sche_start' => $item->sche_start,
+                'sche_end' => $item->sche_end,
+                'type_id' => $item->type_id,
+                'status_id' => $item->status_id,
+                'subcategory_id' => $item->subcategory_id,
+            ];
+        });
 
         // 月内の収支（右サイド用）
         $accounts = Account::select('id', 'title', 'date', 'amount', 'subcategory_id', 'account_category_id')
@@ -68,15 +87,17 @@ class CalendarController extends Controller
             3 => '収入',
         ];
 
-        $incomeTotalMonth = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->where('subcategory_id', 3) // 収入
+        $incomeTotalMonth = Account::where('user_id', $userId)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('subcategory_id', 3)
             ->sum('amount');
 
-        $expenseTotalMonth = Account::whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->where('subcategory_id', 4) // 支出
+        $expenseTotalMonth = Account::where('user_id', $userId)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->where('subcategory_id', 4)
             ->sum('amount');
+
         $netMonth = $incomeTotalMonth - $expenseTotalMonth;
-
 
         return view('calendar.index', [
             'itemCounts'  => $itemCounts,
@@ -85,8 +106,8 @@ class CalendarController extends Controller
             'items'       => $items,
             'accounts'    => $accounts,
             'subcategory' => $subcategories,
-            'baseDate' => $baseDate,
-            'netMonth' => $netMonth,
+            'baseDate'    => $baseDate,
+            'netMonth'    => $netMonth,
         ]);
     }
 }

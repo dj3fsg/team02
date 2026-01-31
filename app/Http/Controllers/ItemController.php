@@ -27,7 +27,7 @@ public function store(ItemStoreRequest $request)
 
     // 1. 日時の結合（HTMLのname属性に合わせる）
     $startDateStr = $request->sche_start_date . ' ' . ($request->sche_start_time ?: '00:00:00');
-    $endDateStr   = $request->sche_start_date . ' ' . ($request->sche_end_time   ?: '23:59:59');
+    $endDateStr   = $request->sche_end_date . ' ' . ($request->sche_end_time   ?: '23:59:59');
 
     $currentStart = \Carbon\Carbon::parse($startDateStr);
     $currentEnd   = \Carbon\Carbon::parse($endDateStr);
