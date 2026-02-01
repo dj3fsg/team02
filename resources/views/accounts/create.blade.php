@@ -1,166 +1,101 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8">
-    <title>収支作成</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>収支作成</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
 
-        header {
-            background-color: #2c3e50;
-            color: #fff;
-            padding: 16px;
-            text-align: center;
-        }
+    /* フォーム全体の幅を締める */
+    .form-wrap {
+      max-width: 520px;
+      margin: 0 auto;
+    }
 
-        /* .container {
-            max-width: 420px;
-            margin: 40px auto;
-            background-color: #fff;
-            padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        } */
+    /* Bootstrapの余白が強すぎる時の微調整（任意） */
+    .form-label { margin-bottom: .35rem; }
+  </style>
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 8px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 24px;
-        }
-
-        button {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        .back-link {
-            text-decoration: none;
-            color: #555;
-            font-size: 14px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
-    @include('parts.head')
+  @include('parts.head')
 </head>
 
 <body>
-    @include('parts.header')
+  @include('parts.header')
 
-    <div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
-        <h1 class="h2">収支作成</h1>
+  <div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
+    <h1 class="h2">収支作成</h1>
+  </div>
+
+  <div class="container-sm p-3">
+    <div class="form-wrap bg-white p-4 rounded-3 shadow-sm">
+
+      <form method="POST" action="{{ route('accounts.store') }}">
+        @csrf
+
+        <!-- 日付 -->
+        <div class="mb-3">
+          <label class="form-label">日付</label>
+          <input type="date" name="date" style="max-width: 150px;"　required class="form-control">
+        </div>
+
+        <!-- 区分 -->
+        <div class="mb-3">
+          <label class="form-label">区分</label>
+          <select name="subcategory_id" required class="form-select">
+            <option value="0">選択してください</option>
+            <option value="3">収入</option>
+            <option value="4">支出</option>
+          </select>
+        </div>
+
+        <!-- 金額 -->
+        <div class="mb-3">
+          <label class="form-label">金額</label>
+          <input type="number" name="amount" required class="form-control" inputmode="numeric">
+        </div>
+
+        <!-- タイトル -->
+        <div class="mb-3">
+          <label class="form-label">タイトル</label>
+          <input type="text" name="title" class="form-control">
+        </div>
+
+        <!-- カテゴリ -->
+        <div class="mb-3">
+          <label class="form-label">カテゴリ</label>
+          <select name="account_category_id" class="form-select">
+            <option value="">選択してください</option>
+            <option value="1">食費</option>
+            <option value="2">日用品</option>
+            <option value="3">交通費</option>
+            <option value="4">家賃</option>
+            <option value="5">娯楽</option>
+            <option value="6">給料</option>
+            <option value="9">その他</option>
+          </select>
+        </div>
+
+        <!-- メモ -->
+        <div class="mb-4">
+          <label class="form-label">メモ</label>
+          <input type="text" name="memo" class="form-control">
+        </div>
+
+        <!-- ボタン -->
+       <div class="col text-start">
+                    <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
+                    <button type="submit" class="btn btn-primary">登録</button>
+                </div>
+      </form>
+
     </div>
-
-    <div class="container p-3">
-
-        <form method="POST" action="{{ route('accounts.store') }}">
-            @csrf
-
-            <!-- 日付 -->
-            <div class="form-group">
-                <label>日付</label>
-                <input type="date" name="date" required>
-            </div>
-
-            <!-- 区分 -->
-            <div class="form-group">
-                <label>区分</label>
-                <select name="subcategory_id" required>
-                    <option value="0">選択してください</option>
-                    <option value="3">収入</option>
-                    <option value="4">支出</option>
-                </select>
-            </div>
-
-            <!-- 金額 -->
-            <div class="form-group">
-                <label>金額</label>
-                <input type="number" name="amount" required>
-            </div>
-
-            <!-- タイトル -->
-            <div class="form-group">
-                <label>タイトル</label>
-                <input type="text" name="title">
-            </div>
-
-
-
-            <!-- カテゴリ -->
-            <div class="form-group">
-                <label>カテゴリ</label>
-                <select name="account_category_id">
-                    <option value="">選択してください</option>
-                    <option value="1">食費</option>
-                    <option value="2">日用品</option>
-                    <option value="3">交通費</option>
-                    <option value="4">家賃</option>
-                    <option value="5">娯楽</option>
-                    <option value="6">給料</option>
-                    <option value="9">その他</option>
-                </select>
-            </div>
-
-            <!-- メモ -->
-            <div class="form-group">
-                <label>メモ</label>
-                <input type="text" name="memo">
-            </div>
-
-            <!-- ボタン -->
-            <div class="button-group">
-                <button type="submit">登録する</button>
-                <!-- <a href="#" class="back-link">戻る</a> -->
-            </div>
-        </form>
-
-    </div>
-
+  </div>
 </body>
-
 </html>

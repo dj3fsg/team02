@@ -50,23 +50,41 @@ class ItemStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'type'           => 'required|string',
-            'title'          => 'required|string|max:255',
-            
-            // 入力フォームから直接送られてくる値
-            'sche_start_date' => 'required|date',
-            'sche_end_date'   => 'nullable|date|after_or_equal:sche_start_date',
-            
-            // prepareForValidationでmergeされた後の値
-            'sche_start'     => 'required_if:type,schedule|date',
-            'sche_end'       => 'nullable|date|after_or_equal:sche_start',
+            'type'  => ['required', 'in:schedule,task'],
+            'title' => ['required', 'string', 'max:255'],
 
-            'sche_done'      => 'required_if:type,task|nullable|date',
-            
-            'memo'           => 'nullable|string|max:255',
-            'location'       => 'nullable|string|max:255',
-            'repeat'         => 'nullable|integer',
-            'repeat_until'   => 'nullable|date|after_or_equal:sche_start_date',
+            // schedule のとき
+            'sche_start_date' => ['required_if:type,schedule', 'date'],
+            'sche_end_date'   => ['nullable', 'date', 'after_or_equal:sche_start_date'],
+
+            // 終日じゃない場合だけ時刻必須（終日なら除外）
+            'sche_start_time' => ['exclude_if:all_day,on', 'required_if:type,schedule', 'date_format:H:i'],
+            'sche_end_time'   => ['exclude_if:all_day,on', 'required_if:type,schedule', 'date_format:H:i'],
+
+            // prepareForValidation で merge する想定の結合済み日時
+            'sche_start' => ['required_if:type,schedule', 'date'],
+            'sche_end'   => ['required_if:type,schedule', 'date', 'after_or_equal:sche_start'],
+
+            // task のとき
+            'sche_done' => ['required_if:type,task', 'date'],
+
+            'memo'     => ['nullable', 'string', 'max:255'],
+            'location' => ['nullable', 'string', 'max:255'],
+
+            'repeat'       => ['nullable', 'integer', 'in:0,1,2,3'],
+            'repeat_until' => ['nullable', 'date', 'after_or_equal:sche_start_date'],
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->sometimes('repeat_until', ['required', 'after_or_equal:sche_start_date'], function ($input) {
+            return (string)$input->type === 'schedule' && (string)$input->repeat !== '0';
+        });
+
+        // 「schedule かつ all_day=on のときは end_date 必須」など必要なら
+        $validator->sometimes('sche_end_date', ['required', 'after_or_equal:sche_start_date'], function ($input) {
+            return (string)$input->type === 'schedule' && isset($input->all_day);
+        });
     }
 }

@@ -25,9 +25,18 @@ public function store(ItemStoreRequest $request)
 {
     $validated = $request->validated(); 
 
-    // 1. 日時の結合（HTMLのname属性に合わせる）
-    $startDateStr = $request->sche_start_date . ' ' . ($request->sche_start_time ?: '00:00:00');
-    $endDateStr   = $request->sche_end_date . ' ' . ($request->sche_end_time   ?: '23:59:59');
+    //日付結合の前に、sche_end_date
+
+    //日付結合
+     if($request->has('all_day')){
+        $startDateStr = $request->sche_start_date . ' ' . '00:00:00';
+        $endDateStr   = $request->sche_end_date . ' ' . '23:59:59';
+
+     }else{
+        $startDateStr = $request->sche_start_date . ' ' . $request->sche_start_time;
+        $endDateStr   = $request->sche_start_date . ' ' . $request->sche_end_time;
+     }
+    
 
     $currentStart = \Carbon\Carbon::parse($startDateStr);
     $currentEnd   = \Carbon\Carbon::parse($endDateStr);
@@ -91,6 +100,7 @@ public function store(ItemStoreRequest $request)
     $count++;
 // 次の予定が期限内であれば続行
 } while ($currentStart->lte($until));
+
 
     return redirect('calendar')->with('success', '登録しました');
 }
