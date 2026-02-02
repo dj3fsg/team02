@@ -38,16 +38,22 @@ public function store(ItemStoreRequest $request)
      }
     
 
-    $currentStart = \Carbon\Carbon::parse($startDateStr);
-    $currentEnd   = \Carbon\Carbon::parse($endDateStr);
+    //$currentStart = \Carbon\Carbon::parse($startDateStr);
+    //$currentEnd   = \Carbon\Carbon::parse($endDateStr);
+    $originStart = \Carbon\Carbon::parse($startDateStr);
+    $originEnd   = \Carbon\Carbon::parse($endDateStr);
+    $baseStart = $originStart->copy();
+    $baseEnd   = $originEnd->copy();
+    $currentStart = $originStart;
+    $currentEnd = $originEnd;
 
     // 2. 期限
     $until = $request->filled('repeat_until') 
                 ? \Carbon\Carbon::parse($request->repeat_until)->endOfDay() 
-                : $currentStart->copy();
+                : $originStart->copy();
 
     $maxLoops = 1200;//3年先までを制限にするという想定
-    $count = 0;
+    $count = 1;
 
     do {
         $item = new Item();
@@ -82,20 +88,21 @@ public function store(ItemStoreRequest $request)
         break;
     }
 
+    $durationSeconds = $baseEnd->diffInSeconds($baseStart);
+
+
     // --- 加算処理（ここが重要：1=毎週, 2=毎月, 3=毎年 になっているか確認） ---
-    if ($request->repeat == '1') {
-        $currentStart->addWeek();
-        $currentEnd->addWeek();
+    if ($request->repeat == '1') {    
+        $currentStart = $baseStart->copy()->addWeeks($count);
     } elseif ($request->repeat == '2') {
-        $currentStart->addMonthNoOverflow();
-        $currentEnd->addMonthNoOverflow();
+        $currentStart = $baseStart->copy()->addMonthsNoOverflow($count);
     } elseif ($request->repeat == '3') {
-        $currentStart->addYearNoOverflow();
-        $currentEnd->addYearNoOverflow();
+        $currentStart = $baseStart->copy()->addYearsNoOverflow($count);
     } else {
         // 想定外の値が来た場合も無限ループ防止で抜ける
         break; 
     }
+    $currentEnd = $currentStart->copy()->addSeconds($durationSeconds);
 
     $count++;
 // 次の予定が期限内であれば続行
