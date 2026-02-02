@@ -90,11 +90,13 @@ class CalendarController extends Controller
         $incomeTotalMonth = Account::where('user_id', $userId)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->where('subcategory_id', 3)
+            ->where('status_id', '<>', 99)
             ->sum('amount');
 
         $expenseTotalMonth = Account::where('user_id', $userId)
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->where('subcategory_id', 4)
+            ->where('status_id', '<>', 99)
             ->sum('amount');
 
         $netMonth = $incomeTotalMonth - $expenseTotalMonth;
