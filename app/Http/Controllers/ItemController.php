@@ -87,11 +87,11 @@ public function store(ItemStoreRequest $request)
         $currentStart->addWeek();
         $currentEnd->addWeek();
     } elseif ($request->repeat == '2') {
-        $currentStart->addMonth();
-        $currentEnd->addMonth();
+        $currentStart->addMonthNoOverflow();
+        $currentEnd->addMonthNoOverflow();
     } elseif ($request->repeat == '3') {
-        $currentStart->addYear();
-        $currentEnd->addYear();
+        $currentStart->addYearNoOverflow();
+        $currentEnd->addYearNoOverflow();
     } else {
         // 想定外の値が来た場合も無限ループ防止で抜ける
         break; 

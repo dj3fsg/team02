@@ -20,16 +20,19 @@ class AccountController extends Controller
     {
         // バリデーション
         $request->validate([
-            'date'       => 'required|date',
-            'account_category_id' => 'required|integer',
-            'amount'     => 'required|numeric|min:0',
-            'memo'       => 'nullable|string|max:255',
+            'date' => 'required|date',
+            'account_category_id' => 'required|integer|exists:account_categories,id',
+            'subcategory_id' => 'required|integer|exists:subcategories,id',
+            'title' => 'nullable|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'memo' => 'nullable|string|max:255',
         ]);
+
+        dd($request);
 
         // 登録
         Account::create([
             'user_id'        => Auth::id(),
-            //'user_id'        => 1,
             'account_category_id' => $request->account_category_id,
             'subcategory_id' => $request->subcategory_id,
             'type_id'        => null,

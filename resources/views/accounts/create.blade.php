@@ -36,6 +36,16 @@
   <div class="container-sm p-3">
     <div class="form-wrap bg-white p-4 rounded-3 shadow-sm">
 
+      @if ($errors->any())
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
       <form method="POST" action="{{ route('accounts.store') }}">
         @csrf
 
