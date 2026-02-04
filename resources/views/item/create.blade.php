@@ -61,7 +61,7 @@
         <div class="mb-3">
           <label for="title" class="form-label">タイトル</label>
           <input type="text" id="title" name="title" class="form-control"
-            value="{{ old('title') }}" placeholder="例：打合せ">
+            value="{{ old('title') }}" placeholder="例：打合せ" >
         </div>
 
         <div id="schedule_area">

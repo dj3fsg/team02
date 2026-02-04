@@ -49,7 +49,6 @@
             type="date"
             name="date"
             style="max-width: 150px;"
-            required
             class="form-control"
             value="{{ old('date', now()->format('Y-m-d')) }}"
           >
@@ -58,7 +57,7 @@
         <!-- 区分 -->
         <div class="mb-3">
           <label class="form-label">区分</label>
-          <select name="subcategory_id" required class="form-select">
+          <select name="subcategory_id"  class="form-select">
             <option value="" {{ old('subcategory_id') === null || old('subcategory_id') === '' ? 'selected' : '' }}>
               選択してください
             </option>
@@ -73,7 +72,6 @@
           <input
             type="number"
             name="amount"
-            required
             class="form-control"
             inputmode="numeric"
             value="{{ old('amount') }}"
