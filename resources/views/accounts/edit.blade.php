@@ -22,7 +22,7 @@
         <label class="form-label">日付</label>
         <input type="date"
                name="date"
-               value="{{ $account->date?->format('Y-m-d') }}"
+               value="{{ old('date', $account->date?->format('Y-m-d')) }}"
                style="max-width: 150px;"
                class="form-control"
                required>
@@ -38,7 +38,7 @@
                    name="subcategory_id"
                    id="subcat_in"
                    value="3"
-                   {{ $account->subcategory_id == 3 ? 'checked' : '' }}>
+                   {{ (string)old('subcategory_id', $account->subcategory_id) === '3' ? 'checked' : '' }}>
             <label class="form-check-label" for="subcat_in">入金</label>
           </div>
 
@@ -48,7 +48,7 @@
                    name="subcategory_id"
                    id="subcat_out"
                    value="4"
-                   {{ $account->subcategory_id == 4 ? 'checked' : '' }}>
+                   {{ (string)old('subcategory_id', $account->subcategory_id) === '4' ? 'checked' : '' }}>
             <label class="form-check-label" for="subcat_out">出金</label>
           </div>
         </div>
@@ -59,7 +59,7 @@
         <label class="form-label">金額</label>
         <input type="number"
                name="amount"
-               value="{{ (int) $account->amount }}"
+               value="{{ old('amount', (int)$account->amount) }}"
                class="form-control"
                inputmode="numeric"
                required>
@@ -70,7 +70,7 @@
         <label class="form-label">タイトル</label>
         <input type="text"
                name="title"
-               value="{{ $account->title }}"
+               value="{{ old('title', $account->title) }}"
                class="form-control">
       </div>
 
@@ -81,7 +81,7 @@
           <option value="0">選択してください</option>
           @foreach ($account_categories as $account_category)
             <option value="{{ $account_category->id }}"
-                    {{ $account->account_category_id == $account_category->id ? 'selected' : '' }}>
+              {{ (string)old('account_category_id', $account->account_category_id) === (string)$account_category->id ? 'selected' : '' }}>
               {{ $account_category->name }}
             </option>
           @endforeach
@@ -93,11 +93,11 @@
         <label class="form-label">メモ</label>
         <input type="text"
                name="memo"
-               value="{{ $account->memo }}"
+               value="{{ old('memo', $account->memo) }}"
                class="form-control">
       </div>
 
-      {{-- ボタン部分は変更しない（並び/役割はそのまま） --}}
+      <!-- ボタン -->
       <div class="mt-4 d-flex gap-2">
         <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
         <button type="button" class="btn btn-danger" onclick="deleteItem()">削除</button>

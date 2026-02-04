@@ -28,7 +28,7 @@ class AccountController extends Controller
             'memo' => 'nullable|string|max:255',
         ]);
 
-        dd($request);
+    
 
         // 登録
         Account::create([
