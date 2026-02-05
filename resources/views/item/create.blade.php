@@ -75,8 +75,13 @@
           <div id="all_day_on" class="d-none mb-3">
             <label class="form-label">日時</label>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-              <input type="date" name="sche_start_date" class="form-control" style="max-width: 200px;"
-                     value="{{ old('sche_start_date') }}">
+              <input type="date"
+                name="sche_start_date"
+                class="form-control"
+                style="max-width: 200px;"
+                value="{{ old('sche_start_date') }}"
+                min="{{ now()->toDateString() }}">
+
               <span>〜</span>
               <input type="date" name="sche_end_date" class="form-control" style="max-width: 200px;"
                      value="{{ old('sche_end_date') }}">

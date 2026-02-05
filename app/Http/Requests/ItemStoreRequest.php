@@ -19,37 +19,48 @@ class ItemStoreRequest extends FormRequest
      * バリデーション前にデータを加工する
      */
     protected function prepareForValidation(): void
-    {
-        if (! $this->filled('sche_start_date')) {
-            return;
-        }
-
-        try {
-            // 終了日が空なら開始日と同じにする（単発予定への配慮）
-            $endDateInput = $this->sche_end_date ?: $this->sche_start_date;
-
-            // boolean() は "on", "1", true 等を bool 化
-            if ($this->boolean('chkAllday')) {
-                $start = Carbon::parse($this->sche_start_date)->startOfDay();
-                $end   = Carbon::parse($endDateInput)->endOfDay();
-            } else {
-                // 開始日時と終了日時をそれぞれ組み立てる
-                $start = Carbon::parse(
-                    $this->sche_start_date . ' ' . ($this->sche_start_time ?: '00:00:00')
-                );
-                $end = Carbon::parse(
-                    $endDateInput . ' ' . ($this->sche_end_time ?: '23:59:59')
-                );
-            }
-
-            $this->merge([
-                'sche_start' => $start->toDateTimeString(),
-                'sche_end'   => $end->toDateTimeString(),
-            ]);
-        } catch (\Exception $e) {
-            // パース失敗時はバリデーションルールの 'date' で弾かれる想定
-        }
+{
+    if (! $this->filled('sche_start_date')) {
+        return;
     }
+
+    // schedule 以外なら触らない（安全）
+    if ($this->input('type') !== 'schedule') {
+        return;
+    }
+
+    // 終了日が空なら開始日と同じ
+    $endDateInput = $this->input('sche_end_date') ?: $this->input('sche_start_date');
+
+    // ★HTMLに合わせる：name="all_day" なのでここを見る
+    $isAllDay = $this->boolean('all_day'); // checkedなら true
+
+    try {
+        if ($isAllDay) {
+            $start = Carbon::parse($this->input('sche_start_date'))->startOfDay();
+            $end   = Carbon::parse($endDateInput)->endOfDay();
+        } else {
+            // ルールは H:i なのでデフォルトも H:i に寄せる
+            $st = $this->input('sche_start_time') ?: '00:00';
+            $et = $this->input('sche_end_time')   ?: '23:59';
+
+            // フォーマット固定で安全に
+            $start = Carbon::createFromFormat('Y-m-d H:i', $this->input('sche_start_date').' '.$st);
+            $end   = Carbon::createFromFormat('Y-m-d H:i', $endDateInput.' '.$et);
+        }
+
+        $this->merge([
+            'sche_start' => $start->toDateTimeString(),
+            'sche_end'   => $end->toDateTimeString(),
+        ]);
+    } catch (\Exception $e) {
+        // いったんログに出す（固まる原因特定のため）
+        logger()->error('prepareForValidation parse failed', [
+            'message' => $e->getMessage(),
+            'input'   => $this->all(),
+        ]);
+    }
+}
 
     /**
      * バリデーションルール
@@ -61,7 +72,7 @@ class ItemStoreRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
 
             // schedule のとき
-            'sche_start_date' => ['required_if:type,schedule', 'date'],
+            'sche_start_date' => ['required_if:type,schedule', 'date' ,'after_or_equal:today'],
             'sche_end_date'   => ['nullable', 'date', 'after_or_equal:sche_start_date'],
 
             // 終日じゃない場合だけ時刻必須（終日なら除外）
@@ -120,6 +131,7 @@ class ItemStoreRequest extends FormRequest
      */
     public function messages(): array
     {
+         $today = now()->toDateString();
         return [
             // 必須系
             'required'               => ':attribute は必須項目です。',
@@ -130,6 +142,8 @@ class ItemStoreRequest extends FormRequest
             'date'                   => ':attribute は正しい日付を入力してください。',
             'date_format'            => ':attribute は :format 形式で入力してください。',
             'after_or_equal'         => ':attribute は :date 以降を指定してください。',
+            'sche_start_date.after_or_equal'
+            => "開始日時は本日（{$today}）以降を指定してください。",
 
             // 文字数
             'max.string'             => ':attribute は :max 文字以内で入力してください。',

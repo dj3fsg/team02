@@ -57,8 +57,13 @@
           <!-- 終日ON -->
           <div id="all_day_on" class="{{ $item->type_id == 2 ? '' : 'd-none' }}">
             <div class="d-flex align-items-center gap-2 flex-wrap">
-              <input type="date" name="sche_start_date" class="form-control" style="max-width:200px"
-                     value="{{ old('sche_start_date', \Carbon\Carbon::parse($item->sche_start ?? now())->format('Y-m-d')) }}">
+              <input type="date"
+                name="sche_start_date"
+                class="form-control"
+                style="max-width:200px"
+                value="{{ old('sche_start_date', \Carbon\Carbon::parse($item->sche_start ?? now())->format('Y-m-d')) }}"
+                min="{{ now()->toDateString() }}">
+
               <span>〜</span>
               <input type="date" name="sche_end_date" class="form-control" style="max-width:200px"
                      value="{{ old('sche_end_date', $item->sche_end ? \Carbon\Carbon::parse($item->sche_end)->format('Y-m-d') : '') }}">
