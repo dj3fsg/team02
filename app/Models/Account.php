@@ -19,9 +19,14 @@ class Account extends Model
         'title',
         'amount',
         'memo',
+        'repeats_id',
     ];
 
     protected $casts = [
         'date' => 'date',
     ];
+
+    // app/Models/Account.php
+public function repeat() { return $this->belongsTo(Repeat::class, 'repeats_id'); }
+
 }

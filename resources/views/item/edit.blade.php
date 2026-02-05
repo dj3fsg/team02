@@ -8,10 +8,7 @@
   @include('parts.head')
 
   <style>
-    .form-wrap {
-      max-width: 600px; 
-      margin: 0 auto;
-    }
+    .form-wrap { max-width: 600px; margin: 0 auto; }
   </style>
 </head>
 
@@ -25,10 +22,12 @@
   <div class="container-sm p-3">
     <div class="form-wrap bg-white p-4 rounded-3 shadow-sm">
 
+      {{-- =======================
+           更新フォーム
+           ======================= --}}
       <form id="update-form"
             method="POST"
-            action="{{ url('calendar/update/' . $item->id) }}"
-            onsubmit="return confirm('この予定を更新してもよろしいですか？');">
+            action="{{ url('calendar/update/' . $item->id) }}">
         @csrf
         @method('PUT')
 
@@ -46,7 +45,7 @@
         <!-- 終日 -->
         <div class="mb-2 form-check">
           <input type="checkbox" id="chk_all_day" name="all_day" class="form-check-input"
-            {{ old('all_day', $item->type_id == 2) ? 'checked' : '' }}>
+                 {{ old('all_day', $item->type_id == 2) ? 'checked' : '' }}>
           <label class="form-check-label" for="chk_all_day">終日の予定</label>
         </div>
 
@@ -58,14 +57,18 @@
           <div id="all_day_on" class="{{ $item->type_id == 2 ? '' : 'd-none' }}">
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <input type="date"
-                name="sche_start_date"
-                class="form-control"
-                style="max-width:200px"
-                value="{{ old('sche_start_date', \Carbon\Carbon::parse($item->sche_start ?? now())->format('Y-m-d')) }}"
-                min="{{ now()->toDateString() }}">
+                     name="sche_start_date"
+                     class="form-control"
+                     style="max-width:200px"
+                     value="{{ old('sche_start_date', \Carbon\Carbon::parse($item->sche_start ?? now())->format('Y-m-d')) }}"
+                     min="{{ now()->toDateString() }}">
 
               <span>〜</span>
-              <input type="date" name="sche_end_date" class="form-control" style="max-width:200px"
+
+              <input type="date"
+                     name="sche_end_date"
+                     class="form-control"
+                     style="max-width:200px"
                      value="{{ old('sche_end_date', $item->sche_end ? \Carbon\Carbon::parse($item->sche_end)->format('Y-m-d') : '') }}">
             </div>
           </div>
@@ -73,12 +76,24 @@
           <!-- 終日OFF -->
           <div id="all_day_off" class="{{ $item->type_id == 2 ? 'd-none' : '' }}">
             <div class="d-flex align-items-center gap-2 flex-wrap">
-              <input type="date" name="sche_start_date" class="form-control" style="max-width:200px"
+              <input type="date"
+                     name="sche_start_date"
+                     class="form-control"
+                     style="max-width:200px"
                      value="{{ old('sche_start_date', \Carbon\Carbon::parse($item->sche_start)->format('Y-m-d')) }}">
-              <input type="time" name="sche_start_time" class="form-control" style="max-width:150px"
+
+              <input type="time"
+                     name="sche_start_time"
+                     class="form-control"
+                     style="max-width:150px"
                      value="{{ old('sche_start_time', \Carbon\Carbon::parse($item->sche_start)->format('H:i')) }}">
+
               <span>〜</span>
-              <input type="time" name="sche_end_time" class="form-control" style="max-width:150px"
+
+              <input type="time"
+                     name="sche_end_time"
+                     class="form-control"
+                     style="max-width:150px"
                      value="{{ old('sche_end_time', $item->sche_end ? \Carbon\Carbon::parse($item->sche_end)->format('H:i') : '') }}">
             </div>
           </div>
@@ -100,33 +115,99 @@
         <!-- 完了 -->
         <div class="mb-3 form-check">
           <input type="checkbox" name="status_id" value="2" class="form-check-input" id="status_done"
-            {{ old('status_id', $item->status_id) == 2 ? 'checked' : '' }}>
+                 {{ old('status_id', $item->status_id) == 2 ? 'checked' : '' }}>
           <label class="form-check-label" for="status_done">完了にする</label>
         </div>
 
-        <!-- ボタン（並びはそのまま） -->
-        <div class="mt-4 d-flex gap-2">
+        <!-- 更新ボタン群（scopeをボタンで送る） -->
+        <div class="mt-4 d-flex flex-wrap gap-2">
           <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
-          <button type="button" class="btn btn-danger" onclick="deleteItem()">削除</button>
-          <button type="submit" class="btn btn-primary">更新</button>
-        </div>
 
+          {{-- シリーズ無し/有り 共通：この予定のみ更新 --}}
+          <button type="submit"
+                  name="scope"
+                  value="single"
+                  class="btn btn-primary"
+                  onclick="return confirm('この予定のみ更新してもよろしいですか？');">
+            この予定のみ更新
+          </button>
+
+          {{-- シリーズ有りのみ表示 --}}
+          @if(!empty($item->repeats_id))
+            <button type="submit"
+                    name="scope"
+                    value="future"
+                    class="btn btn-warning"
+                    onclick="return confirm('これ以降の予定を更新してもよろしいですか？');">
+              これ以降の予定を更新
+            </button>
+
+            <button type="submit"
+                    name="scope"
+                    value="all"
+                    class="btn btn-danger"
+                    onclick="return confirm('すべての予定を更新してもよろしいですか？');">
+              すべての予定を更新
+            </button>
+          @endif
+        </div>
       </form>
+
+      {{-- =======================
+           削除フォーム（更新フォームと分離）
+           ======================= --}}
+      <div class="mt-4 border-top pt-3">
+        <div class="d-flex flex-wrap gap-2">
+
+          {{-- シリーズ無し/有り 共通：この予定のみ削除 --}}
+          <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                    name="scope"
+                    value="single"
+                    class="btn btn-outline-danger"
+                    onclick="return confirm('この予定のみ削除してもよろしいですか？');">
+              この予定のみ削除
+            </button>
+          </form>
+
+          {{-- シリーズ有りのみ表示 --}}
+          @if(!empty($item->repeats_id))
+            <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
+              @csrf
+              @method('DELETE')
+              <button type="submit"
+                      name="scope"
+                      value="future"
+                      class="btn btn-outline-warning"
+                      onclick="return confirm('これ以降の予定を削除してもよろしいですか？');">
+                これ以降の予定を削除
+              </button>
+            </form>
+
+            <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
+              @csrf
+              @method('DELETE')
+              <button type="submit"
+                      name="scope"
+                      value="all"
+                      class="btn btn-outline-dark"
+                      onclick="return confirm('すべての予定を削除してもよろしいですか？');">
+                すべての予定を削除
+              </button>
+            </form>
+          @endif
+
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <form id="delete-form"
-        method="POST"
-        action="{{ url('calendar/delete/' . $item->id) }}"
-        style="display:none;">
-    @csrf
-    @method('DELETE')
-  </form>
-
-  <!-- sche_start / sche_end を確定 -->
+  <!-- sche_start / sche_end を確定（更新時のみ） -->
   <script>
   document.getElementById('update-form').addEventListener('submit', function () {
-
     const isAllDay = document.getElementById('chk_all_day').checked;
 
     const startDate = document.querySelector(
@@ -153,7 +234,6 @@
   });
 
   document.addEventListener('DOMContentLoaded', function () {
-
     const chkAllDay = document.getElementById('chk_all_day');
     const allDayOn  = document.getElementById('all_day_on');
     const allDayOff = document.getElementById('all_day_off');
@@ -171,12 +251,6 @@
     toggleAllDay();
     chkAllDay.addEventListener('change', toggleAllDay);
   });
-
-  function deleteItem() {
-    if (confirm('この予定を削除してもよろしいですか？')) {
-      document.getElementById('delete-form').submit();
-    }
-  }
   </script>
 </body>
 </html>

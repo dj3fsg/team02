@@ -28,4 +28,11 @@ class Item extends Model
         'memo',
         'done',            // チェックボックスの値
     ];
+
+    // app/Models/Item.php
+  public function repeat() { 
+    return $this->belongsTo(Repeat::class, 'repeats_id'); }
+
+
+    
 }

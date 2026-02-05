@@ -10,10 +10,12 @@
 <div class="container-sm p-3">
   <div class="mx-auto bg-white p-4 rounded-3 shadow-sm" style="max-width: 520px;">
 
+    {{-- =======================
+         更新フォーム
+         ======================= --}}
     <form id="update-form"
           method="POST"
-          action="{{ url('account/update/' . $account->id) }}"
-          onsubmit="return confirm('この収支を更新してもよろしいですか？');">
+          action="{{ url('account/update/' . $account->id) }}">
       @csrf
       @method('PUT')
 
@@ -97,35 +99,95 @@
                class="form-control">
       </div>
 
-      <!-- ボタン -->
-      <div class="mt-4 d-flex gap-2">
+      <!-- 更新ボタン群 -->
+      <div class="mt-4 d-flex flex-wrap gap-2">
         <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
-        <button type="button" class="btn btn-danger" onclick="deleteItem()">削除</button>
-        <button type="submit" class="btn btn-primary">更新</button>
+
+        {{-- シリーズ無し/有り共通：この収支のみ更新 --}}
+        <button type="submit"
+                name="scope"
+                value="single"
+                class="btn btn-primary"
+                onclick="return confirm('この収支のみ更新してもよろしいですか？');">
+          この収支のみ更新
+        </button>
+
+        {{-- シリーズ有りのみ：これ以降 / すべて --}}
+        @if(!empty($account->repeats_id))
+          <button type="submit"
+                  name="scope"
+                  value="future"
+                  class="btn btn-warning"
+                  onclick="return confirm('これ以降の収支を更新してもよろしいですか？');">
+            これ以降を更新
+          </button>
+
+          <button type="submit"
+                  name="scope"
+                  value="all"
+                  class="btn btn-danger"
+                  onclick="return confirm('すべての収支を更新してもよろしいですか？');">
+            すべてを更新
+          </button>
+        @endif
       </div>
 
     </form>
+
+    {{-- =======================
+         削除ボタン群（別フォーム）
+         ======================= --}}
+    <div class="mt-4 border-top pt-3">
+      <div class="d-flex flex-wrap gap-2">
+
+        {{-- シリーズ無し/有り共通：この収支のみ削除 --}}
+        <form method="POST" action="{{ url('account/delete/' . $account->id) }}">
+          @csrf
+          @method('DELETE')
+          <button type="submit"
+                  name="scope"
+                  value="single"
+                  class="btn btn-outline-danger"
+                  onclick="return confirm('この収支のみ削除してもよろしいですか？');">
+            この収支のみ削除
+          </button>
+        </form>
+
+        {{-- シリーズ有りのみ：これ以降 / すべて削除 --}}
+        @if(!empty($account->repeats_id))
+          <form method="POST" action="{{ url('account/delete/' . $account->id) }}">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                    name="scope"
+                    value="future"
+                    class="btn btn-outline-warning"
+                    onclick="return confirm('これ以降の収支を削除してもよろしいですか？');">
+              これ以降を削除
+            </button>
+          </form>
+
+          <form method="POST" action="{{ url('account/delete/' . $account->id) }}">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                    name="scope"
+                    value="all"
+                    class="btn btn-outline-dark"
+                    onclick="return confirm('すべての収支を削除してもよろしいですか？');">
+              すべてを削除
+            </button>
+          </form>
+        @endif
+
+      </div>
+    </div>
+
   </div>
 </div>
-
-<form id="delete-form"
-      method="POST"
-      action="{{ url('account/delete/' . $account->id) }}"
-      style="display:none;">
-  @csrf
-  @method('DELETE')
-</form>
 
 @else
   <h2>不正な閲覧</h2>
 @endif
-
-<script>
-function deleteItem() {
-  if (confirm('この収支を削除してもよろしいですか？')) {
-    document.getElementById('delete-form').submit();
-  }
-}
-</script>
 
 @endsection

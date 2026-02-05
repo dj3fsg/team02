@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>G05 当日詳細一覧</title>
+  <title>当日詳細一覧</title>
 
   @include('parts.head')
 

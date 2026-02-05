@@ -2,7 +2,7 @@
 namespace App\Http\Requests;
 
 // ItemStoreRequest を継承する
-class ItemUpdateRequest extends ItemStoreRequest
+class AccountUpdateRequest extends AccountStoreRequest
 {
     public function rules(): array
     {

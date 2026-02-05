@@ -54,6 +54,24 @@
           >
         </div>
 
+        <!-- 繰り返し -->
+        <div class="mb-3">
+          <label class="form-label">繰り返し</label>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <select name="repeat" id="repeat_id" class="form-select" style="max-width: 160px;">
+              <option value="0" {{ old('repeat', '0') === '0' ? 'selected' : '' }}>無し</option>
+              <option value="1" {{ old('repeat') === '1' ? 'selected' : '' }}>毎週</option>
+              <option value="2" {{ old('repeat') === '2' ? 'selected' : '' }}>毎月</option>
+              <option value="3" {{ old('repeat') === '3' ? 'selected' : '' }}>毎年</option>
+            </select>
+
+            <label class="form-label mb-0">繰り返し期限</label>
+            <input type="date" id="repeat_until" name="repeat_until" class="form-control" style="max-width: 200px;"
+                   value="{{ old('repeat_until') }}">
+          </div>
+        </div>
+
+
         <!-- 区分 -->
         <div class="mb-3">
           <label class="form-label">区分</label>
@@ -126,5 +144,6 @@
 
     </div>
   </div>
+ <script src="{{ asset('js/account.js') }}"></script>
 </body>
 </html>

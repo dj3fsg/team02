@@ -126,11 +126,6 @@
             <label class="form-label mb-0">繰り返し期限</label>
             <input type="date" id="repeat_until" name="repeat_until" class="form-control" style="max-width: 200px;"
                    value="{{ old('repeat_until') }}">
-            <div class="alert alert-info mt-2">
-              <strong>ご注意</strong><br>
-              繰り返し予定は、現在「個別編集・個別削除」のみ対応しています。<br>
-              「この日以降の一括編集・削除」は今後の対応予定です。
-            </div>
           </div>
         </div>
 
