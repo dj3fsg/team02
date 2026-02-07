@@ -16,7 +16,11 @@ class AccountController extends Controller
     // 収支作成画面
     public function create()
     {
-        return view('accounts.create');
+        $incomeCategories  = Account_category::where('type_id', 1)->orderBy('id')->get(); // 入金用
+        $expenseCategories = Account_category::where('type_id', 0)->orderBy('id')->get(); // 出金用
+        
+    return view('accounts.create', compact('incomeCategories', 'expenseCategories'));
+
     }
 
     // 収支登録処理
@@ -59,7 +63,7 @@ class AccountController extends Controller
             'user_id'             => Auth::id(),
             'date'                => $currentDate->format('Y-m-d'),
             'account_category_id' => $validated['account_category_id'],
-            'subcategory_id'      => $validated['subcategory_id'],
+            'subcategory_id'      => (int)$validated['subcategory_id'], 
             'title'               => $validated['title'] ?? null,
             'amount'              => $price,
             'memo'                => $validated['memo'] ?? null,
@@ -109,7 +113,7 @@ class AccountController extends Controller
 
         $scope = $request->input('scope', 'single'); // single / future / all
 
-        // 金額整形（あなたの実装踏襲）
+        // 金額整形
         $priceInput = $validated['amount'];
         $price = filter_var(str_replace(',', '', $priceInput), FILTER_VALIDATE_FLOAT);
 

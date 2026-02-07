@@ -31,26 +31,26 @@
       </div>
 
       <!-- 区分 -->
-      <div class="mb-3">
-        <label class="form-label d-block">区分</label>
-        <div class="d-flex gap-4 flex-wrap">
-          <div class="form-check">
-            <input class="form-check-input"
-                   type="radio"
-                   name="subcategory_id"
-                   id="subcat_in"
-                   value="3"
-                   {{ (string)old('subcategory_id', $account->subcategory_id) === '3' ? 'checked' : '' }}>
-            <label class="form-check-label" for="subcat_in">入金</label>
+        <div class="mb-3">
+          <label class="form-label d-block">区分</label>
+          <div class="d-flex gap-4 flex-wrap">
+            <div class="form-check">
+              <input class="form-check-input"
+                    type="radio"
+                    name="subcategory_id"
+                    id="subcat_in"
+                    value="3"
+                    {{ (string)old('subcategory_id') === '3' ? 'checked' : '' }}>
+              <label class="form-check-label" for="subcat_in">入金</label>
           </div>
 
           <div class="form-check">
             <input class="form-check-input"
-                   type="radio"
-                   name="subcategory_id"
-                   id="subcat_out"
-                   value="4"
-                   {{ (string)old('subcategory_id', $account->subcategory_id) === '4' ? 'checked' : '' }}>
+                  type="radio"
+                  name="subcategory_id"
+                  id="subcat_out"
+                  value="4"
+                  {{ (string)old('subcategory_id') === '4' ? 'checked' : '' }}>
             <label class="form-check-label" for="subcat_out">出金</label>
           </div>
         </div>

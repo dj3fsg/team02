@@ -71,18 +71,31 @@
           </div>
         </div>
 
-
-        <!-- 区分 -->
         <div class="mb-3">
-          <label class="form-label">区分</label>
-          <select name="subcategory_id"  class="form-select">
-            <option value="" {{ old('subcategory_id') === null || old('subcategory_id') === '' ? 'selected' : '' }}>
-              選択してください
-            </option>
-            <option value="3" {{ old('subcategory_id') == '3' ? 'selected' : '' }}>収入</option>
-            <option value="4" {{ old('subcategory_id') == '4' ? 'selected' : '' }}>支出</option>
-          </select>
+          <label class="form-label d-block">区分</label>
+          <div class="d-flex gap-4 flex-wrap">
+            <div class="form-check">
+              <input class="form-check-input"
+                    type="radio"
+                    name="subcategory_id"
+                    id="subcat_in"
+                    value="3"
+                    {{ (string)old('subcategory_id') === '3' ? 'checked' : '' }}>
+              <label class="form-check-label" for="subcat_in">入金</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input"
+                  type="radio"
+                  name="subcategory_id"
+                  id="subcat_out"
+                  value="4"
+                  {{ (string)old('subcategory_id') === '4' ? 'checked' : '' }}>
+            <label class="form-check-label" for="subcat_out">出金</label>
+          </div>
         </div>
+      </div>
+
 
         <!-- 金額 -->
         <div class="mb-3">
@@ -106,23 +119,29 @@
             value="{{ old('title') }}"
           >
         </div>
+      <label class="form-label">カテゴリ</label>
+       <select
+        name="account_category_id"
+        id="account_category"
+        class="form-select"
+        data-old="{{ old('account_category_id') }}"
+      >
+        <option value="">選択してください</option>
 
-        <!-- カテゴリ -->
-        <div class="mb-3">
-          <label class="form-label">カテゴリ</label>
-          <select name="account_category_id" class="form-select">
-            <option value="" {{ old('account_category_id') === null || old('account_category_id') === '' ? 'selected' : '' }}>
-              選択してください
-            </option>
-            <option value="1" {{ old('account_category_id') == '1' ? 'selected' : '' }}>食費</option>
-            <option value="2" {{ old('account_category_id') == '2' ? 'selected' : '' }}>日用品</option>
-            <option value="3" {{ old('account_category_id') == '3' ? 'selected' : '' }}>交通費</option>
-            <option value="4" {{ old('account_category_id') == '4' ? 'selected' : '' }}>家賃</option>
-            <option value="5" {{ old('account_category_id') == '5' ? 'selected' : '' }}>娯楽</option>
-            <option value="6" {{ old('account_category_id') == '6' ? 'selected' : '' }}>給料</option>
-            <option value="9" {{ old('account_category_id') == '9' ? 'selected' : '' }}>その他</option>
-          </select>
-        </div>
+        <optgroup label="入金">
+          @foreach($incomeCategories as $cat)
+            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+          @endforeach
+        </optgroup>
+
+        <optgroup label="出金">
+          @foreach($expenseCategories as $cat)
+            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+          @endforeach
+        </optgroup>
+      </select>
+
+
 
         <!-- メモ -->
         <div class="mb-4">
