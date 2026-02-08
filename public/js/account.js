@@ -5,11 +5,12 @@
  * - バリデーションエラー時：old(account_category_id) を復元
  */
 document.addEventListener('DOMContentLoaded', function () {
-  /* =========================
-   * 繰り返し期限のON/OFF制御
-   * ========================= */
+
+  console.log('[account.js] loaded');
+ 
   const repeatSelect = document.getElementById('repeat_id');
   const repeatUntil = document.getElementById('repeat_until');
+  
 
   function toggleRepeatUntil() {
     if (!repeatSelect || !repeatUntil) return;
@@ -31,8 +32,10 @@ document.addEventListener('DOMContentLoaded', function () {
    * 区分（3/4）でカテゴリ絞り込み（old復元対応）
    * ========================= */
   const radios = document.querySelectorAll('input[name="subcategory_id"]');
-  const categorySelect = document.getElementById('account_category');
-  if (!categorySelect || radios.length === 0) return;
+  const categorySelect = document.getElementById('account_category_id');
+  if (!categorySelect) {
+    return;
+  }
 
   // old のカテゴリID（バリデーションエラーから戻った時用）
   const oldCategoryId = categorySelect.dataset.old || '';
@@ -100,12 +103,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // 区分変更：不整合防止のためカテゴリはクリア（←挙動を変えたいなら後述）
-  radios.forEach((r) => {
-    r.addEventListener('change', () => {
-      rebuildCategories(r.value, { keepSelection: false });
-    });
+  // 区分変更：イベント委譲（DOM後挿し・タイミングズレ対策）
+  document.addEventListener('change', (e) => {
+    if (!e.target.matches('input[name="subcategory_id"]')) return;
+    rebuildCategories(e.target.value, { keepSelection: false });
   });
+
 
   // 初期反映：checked の区分に合わせて絞り込みつつ、oldカテゴリを復元
   const checked = document.querySelector('input[name="subcategory_id"]:checked');

@@ -30,6 +30,12 @@
                required>
       </div>
 
+      @php
+      // edit画面：$item があればDB値、なければ null
+      // validationエラー後：old() が最優先
+      $selectedSubcat = old('subcategory_id', $account->subcategory_id ?? null);
+    @endphp
+
       <!-- 区分 -->
         <div class="mb-3">
           <label class="form-label d-block">区分</label>
@@ -40,7 +46,7 @@
                     name="subcategory_id"
                     id="subcat_in"
                     value="3"
-                    {{ (string)old('subcategory_id') === '3' ? 'checked' : '' }}>
+                    {{ (string)$selectedSubcat === '3' ? 'checked' : '' }}>
               <label class="form-check-label" for="subcat_in">入金</label>
           </div>
 
@@ -50,7 +56,7 @@
                   name="subcategory_id"
                   id="subcat_out"
                   value="4"
-                  {{ (string)old('subcategory_id') === '4' ? 'checked' : '' }}>
+                  {{ (string)$selectedSubcat === '4' ? 'checked' : '' }}>
             <label class="form-check-label" for="subcat_out">出金</label>
           </div>
         </div>
@@ -79,10 +85,13 @@
       <!-- カテゴリ -->
       <div class="mb-3">
         <label class="form-label">カテゴリ</label>
-        <select name="account_category_id" class="form-select">
-          <option value="0">選択してください</option>
+          <select name="account_category_id" id="account_category_id" class="form-select">
+          <option value="">選択してください</option>
+
           @foreach ($account_categories as $account_category)
-            <option value="{{ $account_category->id }}"
+            <option
+              value="{{ $account_category->id }}"
+              data-kbn="{{ (int)$account_category->type_id === 1 ? 'in' : 'out' }}"
               {{ (string)old('account_category_id', $account->account_category_id) === (string)$account_category->id ? 'selected' : '' }}>
               {{ $account_category->name }}
             </option>
@@ -185,7 +194,7 @@
 
   </div>
 </div>
-
+<script src="{{ asset('js/account.js') }}"></script>
 @else
   <h2>不正な閲覧</h2>
 @endif

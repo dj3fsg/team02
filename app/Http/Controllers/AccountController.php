@@ -99,7 +99,10 @@ class AccountController extends Controller
     public function edit($id)
     {
         $account = Account::findOrFail($id);
-        $account_categories = Account_category::all();
+        
+        $typeId = ($account->subcategory_id == 4) ? 0 : 1; // 出金→0、入金→1
+        $account_categories = Account_category::orderBy('id')->get();
+        
 
         return view('accounts.edit', compact('account', 'account_categories'));
     }
