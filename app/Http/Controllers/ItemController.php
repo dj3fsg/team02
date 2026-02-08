@@ -119,6 +119,7 @@ public function store(ItemStoreRequest $request)
 }
  public function update(Request $request, $id)
     {
+        dd($request->all());
         $item = Item::findOrFail($id);
 
         // scope: single / future / all （フォームから来る想定）
@@ -155,6 +156,7 @@ public function store(ItemStoreRequest $request)
     // =========================================================
     private function updateSingleInSeries(Request $request, Item $item)
     {
+       
         DB::transaction(function () use ($request, $item) {
            
             $this->applyUpdateFromRequest($item, $request);
@@ -227,9 +229,8 @@ public function store(ItemStoreRequest $request)
         $item->sche_end   = $request->sche_end;
         $item->type_id    = 2;
     } else {
-        // ここは end_date を使う
         $item->sche_start = $request->sche_start_date . ' ' . $request->sche_start_time;
-        $item->sche_end   = $request->sche_end_date   . ' ' . $request->sche_end_time;
+        $item->sche_end   = $request->sche_start_date   . ' ' . $request->sche_end_time;
         $item->type_id    = 1;
     }
 

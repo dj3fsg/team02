@@ -7,6 +7,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,10 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/calendar/delete/{id}', [ItemController::class, 'delete']);
 
+    Route::put('calendar/update/{id}', function ($id) {
+    \Log::debug('ROUTE HIT calendar/update', ['id' => $id, 'all' => request()->all()]);
+    return response('route ok', 200);
+});
 
     // 収支（Account）
     Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');

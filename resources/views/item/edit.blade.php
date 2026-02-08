@@ -209,52 +209,6 @@
     </div>
   </div>
    <script src="{{ asset('js/calendar.js') }}"></script>
-   <script>
-  document.getElementById('update-form').addEventListener('submit', function () {
-    const isAllDay = document.getElementById('chk_all_day').checked;
-
-    const startDate = document.querySelector(
-      '#all_day_on:not(.d-none) [name="sche_start_date"], #all_day_off:not(.d-none) [name="sche_start_date"]'
-    ).value;
-
-    const startTime = document.querySelector(
-      '#all_day_off:not(.d-none) [name="sche_start_time"]'
-    )?.value || '00:00:00';
-
-    const endDate = document.querySelector(
-      '#all_day_on:not(.d-none) [name="sche_end_date"]'
-    )?.value || startDate;
-
-    const endTime = document.querySelector(
-      '#all_day_off:not(.d-none) [name="sche_end_time"]'
-    )?.value || '23:59:59';
-
-    document.getElementById('sche_start').value =
-      isAllDay ? `${startDate} 00:00:00` : `${startDate} ${startTime}`;
-
-    document.getElementById('sche_end').value =
-      isAllDay ? `${endDate} 23:59:59` : `${startDate} ${endTime}`;
-  });
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const chkAllDay = document.getElementById('chk_all_day');
-    const allDayOn  = document.getElementById('all_day_on');
-    const allDayOff = document.getElementById('all_day_off');
-
-    function toggleAllDay() {
-      if (chkAllDay.checked) {
-        allDayOn.classList.remove('d-none');
-        allDayOff.classList.add('d-none');
-      } else {
-        allDayOn.classList.add('d-none');
-        allDayOff.classList.remove('d-none');
-      }
-    }
-
-    toggleAllDay();
-    chkAllDay.addEventListener('change', toggleAllDay);
-  });
-  </script>
 
 </body>
 </html>

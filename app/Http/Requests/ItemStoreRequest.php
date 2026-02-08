@@ -72,7 +72,7 @@ class ItemStoreRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
 
             // schedule のとき
-            'sche_start_date' => ['required_if:type,schedule', 'date' ,'after_or_equal:today'],
+            'sche_start_date' => ['required_if:type,schedule', 'date'],
             'sche_end_date'   => ['nullable', 'date', 'after_or_equal:sche_start_date'],
 
             // 終日じゃない場合だけ時刻必須（終日なら除外）
