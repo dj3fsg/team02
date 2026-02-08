@@ -30,37 +30,29 @@
                required>
       </div>
 
-      @php
-      // edit画面：$item があればDB値、なければ null
-      // validationエラー後：old() が最優先
-      $selectedSubcat = old('subcategory_id', $account->subcategory_id ?? null);
-    @endphp
-
       <!-- 区分 -->
-        <div class="mb-3">
-          <label class="form-label d-block">区分</label>
-          <div class="d-flex gap-4 flex-wrap">
-            <div class="form-check">
-              <input class="form-check-input"
-                    type="radio"
-                    name="subcategory_id"
-                    id="subcat_in"
-                    value="3"
-                    {{ (string)$selectedSubcat === '3' ? 'checked' : '' }}>
-              <label class="form-check-label" for="subcat_in">入金</label>
+      <div class="mb-3">
+        <label class="form-label d-block">区分</label>
+
+        @php
+          $selectedSubcat = old('subcategory_id', $account->subcategory_id ?? '');
+        @endphp
+
+        <div class="d-flex gap-4 flex-wrap">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="subcategory_id" id="subcat_in" value="3"
+              {{ (string)$selectedSubcat === '3' ? 'checked' : '' }}>
+            <label class="form-check-label" for="subcat_in">入金</label>
           </div>
 
           <div class="form-check">
-            <input class="form-check-input"
-                  type="radio"
-                  name="subcategory_id"
-                  id="subcat_out"
-                  value="4"
-                  {{ (string)$selectedSubcat === '4' ? 'checked' : '' }}>
+            <input class="form-check-input" type="radio" name="subcategory_id" id="subcat_out" value="4"
+              {{ (string)$selectedSubcat === '4' ? 'checked' : '' }}>
             <label class="form-check-label" for="subcat_out">出金</label>
           </div>
         </div>
       </div>
+
 
       <!-- 金額 -->
       <div class="mb-3">
@@ -82,22 +74,47 @@
                class="form-control">
       </div>
 
-      <!-- カテゴリ -->
-      <div class="mb-3">
-        <label class="form-label">カテゴリ</label>
-          <select name="account_category_id" id="account_category_id" class="form-select">
-          <option value="">選択してください</option>
+      @php
+  $selectedSubcat   = (int) old('subcategory_id', $account->subcategory_id ?? 0);
+  $selectedCategory = (int) old('account_category_id', $account->account_category_id ?? 0);
 
-          @foreach ($account_categories as $account_category)
-            <option
-              value="{{ $account_category->id }}"
-              data-kbn="{{ (int)$account_category->type_id === 1 ? 'in' : 'out' }}"
-              {{ (string)old('account_category_id', $account->account_category_id) === (string)$account_category->id ? 'selected' : '' }}>
-              {{ $account_category->name }}
-            </option>
-          @endforeach
-        </select>
-      </div>
+  // JS用に {id,name} だけ渡す（軽量化）
+  $incomeJson  = $incomeCategories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->values()->toJson();
+  $expenseJson = $expenseCategories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->values()->toJson();
+@endphp
+
+<select
+  name="account_category_id"
+  class="form-select"
+  id="account_category_id"
+  data-old="{{ (string)old('account_category_id', $account->account_category_id ?? '') }}"
+  data-income='@json($incomeCategories->map(fn($c)=>["id"=>$c->id,"name"=>$c->name])->values())'
+  data-expense='@json($expenseCategories->map(fn($c)=>["id"=>$c->id,"name"=>$c->name])->values())'
+>
+  <option value="">選択してください</option>
+
+  {{-- 初期表示はBladeで出しておく（JSが初期反映しなくてもOK） --}}
+  @if($selectedSubcat === 3)
+    @foreach($incomeCategories as $cat)
+      <option value="{{ $cat->id }}" {{ $cat->id == $selectedCategory ? 'selected' : '' }}>
+        {{ $cat->name }}
+      </option>
+    @endforeach
+  @elseif($selectedSubcat === 4)
+    @foreach($expenseCategories as $cat)
+      <option value="{{ $cat->id }}" {{ $cat->id == $selectedCategory ? 'selected' : '' }}>
+        {{ $cat->name }}
+      </option>
+    @endforeach
+  @endif
+</select>
+
+
+      
+    
+
+
+     
 
       <!-- メモ -->
       <div class="mb-4">

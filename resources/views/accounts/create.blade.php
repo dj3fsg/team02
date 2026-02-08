@@ -122,7 +122,7 @@
       <label class="form-label">カテゴリ</label>
        <select
         name="account_category_id"
-        id="account_category"
+        id="account_category_id"
         class="form-select"
         data-old="{{ old('account_category_id') }}"
       >

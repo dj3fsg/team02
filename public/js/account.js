@@ -53,6 +53,23 @@ document.addEventListener('DOMContentLoaded', function () {
   const allOptionsOriginal = Array.from(categorySelect.querySelectorAll('option'))
     .filter((opt) => opt.value !== '');
 
+  // ★Bladeの data-income / data-expense からカテゴリ配列を取得（optgroupが無くても動く）
+  const incomeData = JSON.parse(categorySelect.dataset.income || '[]');   // [{id,name},...]
+  const expenseData = JSON.parse(categorySelect.dataset.expense || '[]'); // [{id,name},...]
+
+  function buildOptgroupFromData(label, rows) {
+    const og = document.createElement('optgroup');
+    og.label = label;
+    rows.forEach((r) => {
+      const opt = document.createElement('option');
+      opt.value = String(r.id);
+      opt.textContent = r.name;
+      og.appendChild(opt);
+    });
+    return og;
+  }
+
+
   function buildOptgroup(label, options) {
     const og = document.createElement('optgroup');
     og.label = label;
@@ -76,23 +93,24 @@ document.addEventListener('DOMContentLoaded', function () {
       // 入金
       if (inGroupOriginal) {
         categorySelect.appendChild(inGroupOriginal.cloneNode(true));
+      } else if (incomeData.length) {
+        categorySelect.appendChild(buildOptgroupFromData('入金', incomeData));
       } else {
-        const o = allOptionsOriginal.filter((x) => x.dataset.kbn === 'in');
-        if (o.length) categorySelect.appendChild(buildOptgroup('入金', o));
+        // 最後の保険：何も出せない
       }
     } else if (subcategoryId === '4') {
       // 出金
       if (outGroupOriginal) {
         categorySelect.appendChild(outGroupOriginal.cloneNode(true));
+      } else if (expenseData.length) {
+        categorySelect.appendChild(buildOptgroupFromData('出金', expenseData));
       } else {
-        const o = allOptionsOriginal.filter((x) => x.dataset.kbn === 'out');
-        if (o.length) categorySelect.appendChild(buildOptgroup('出金', o));
+        // 最後の保険：何も出せない
       }
     } else {
-      // 未選択：両方
-      if (inGroupOriginal) categorySelect.appendChild(inGroupOriginal.cloneNode(true));
-      if (outGroupOriginal) categorySelect.appendChild(outGroupOriginal.cloneNode(true));
+      // 未選択：混在防止のため何も出さない（placeholderのみ）
     }
+
 
     // 復元（存在するoptionなら戻す）
     if (desiredValue) {
@@ -108,9 +126,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!e.target.matches('input[name="subcategory_id"]')) return;
     rebuildCategories(e.target.value, { keepSelection: false });
   });
-
-
-  // 初期反映：checked の区分に合わせて絞り込みつつ、oldカテゴリを復元
+  
   const checked = document.querySelector('input[name="subcategory_id"]:checked');
-  rebuildCategories(checked ? checked.value : null, { keepSelection: true });
+if (checked) {
+  rebuildCategories(checked.value, { keepSelection: true });
+}
+
 });
