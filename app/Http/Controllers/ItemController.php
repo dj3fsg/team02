@@ -213,6 +213,7 @@ public function store(ItemStoreRequest $request)
     // =========================
     private function applyUpdateFromRequest(Item $item, Request $request): void
     {
+        
         $item->title     = $request->title;
         $item->location  = $request->location;
         $item->memo      = $request->memo;
@@ -221,14 +222,17 @@ public function store(ItemStoreRequest $request)
         $item->status_id = $request->has('status_id') ? 2 : 1;
 
         if ($request->has('all_day')) {
-            $item->sche_start = $request->sche_start_date . ' 00:00:00';
-            $item->sche_end   = $request->sche_end_date   . ' 23:59:59';
-            $item->type_id    = 2;
-        } else {
-            $item->sche_start = $request->sche_start_date . ' ' . $request->sche_start_time;
-            $item->sche_end   = $request->sche_start_date . ' ' . $request->sche_end_time;
-            $item->type_id    = 1;
-        }
+        // 画面の入力（date）を優先
+        $item->sche_start = $request->sche_start;
+        $item->sche_end   = $request->sche_end;
+        $item->type_id    = 2;
+    } else {
+        // ここは end_date を使う
+        $item->sche_start = $request->sche_start_date . ' ' . $request->sche_start_time;
+        $item->sche_end   = $request->sche_end_date   . ' ' . $request->sche_end_time;
+        $item->type_id    = 1;
+    }
+
     }
         private function applyUpdateFromRequestWithoutDate(Item $item, Request $request): void
     {
@@ -237,7 +241,7 @@ public function store(ItemStoreRequest $request)
         $item->memo      = $request->memo;
         $item->status_id = $request->has('status_id') ? 2 : 1;
 
-        // ★ここ重要：sche_start / sche_end は更新しない
+      
         // type_id も「終日/時間」を一括で変えたくないなら触らないのが安全
         // もし揃えたいなら下の1行だけ入れる：
         // $item->type_id = $request->has('all_day') ? 2 : 1;
