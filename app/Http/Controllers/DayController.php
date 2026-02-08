@@ -6,7 +6,8 @@ use App\Models\Item;
 use App\Models\Account;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Subcategory;
+use App\Models\Account_category;
 class DayController extends Controller
 {
     public function show($date)
@@ -14,20 +15,9 @@ class DayController extends Controller
         $userId = Auth::id();
         $date   = Carbon::parse($date);
 
-        $subcategories = [
-            3 => '収入',
-            4 => '支出',
-        ];
-
-        $category = [
-            1 => '食費',
-            2 => '日用品',
-            3 => '交通費',
-            4 => '家賃',
-            5 => '娯楽',
-            6 => '給料',
-            9 => 'その他',
-        ];
+        // 表示用に、区分・カテゴリをマスタDBから id => 名称 の配列で取得
+        $subcategories = Subcategory::pluck('subcategory', 'id')->toArray();
+        $category      = Account_category::pluck('name', 'id')->toArray();
 
         // 予定 / タスク
         $items = Item::where('user_id', $userId)
