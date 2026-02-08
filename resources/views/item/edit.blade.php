@@ -112,12 +112,16 @@
           <textarea name="memo" class="form-control" rows="4">{{ old('memo', $item->memo) }}</textarea>
         </div>
 
+        <input type="hidden" id="subcategory_id" value="{{ $item->subcategory_id }}">
+
         <!-- 完了 -->
-        <div class="mb-3 form-check">
-          <input type="checkbox" name="status_id" value="2" class="form-check-input" id="status_done"
-                 {{ old('status_id', $item->status_id) == 2 ? 'checked' : '' }}>
-          <label class="form-check-label" for="status_done">完了にする</label>
-        </div>
+        @if(old('subcategory_id', $item->subcategory_id) == 2)
+          <div class="mb-3 form-check">
+            <input type="checkbox" name="status_id" value="2" class="form-check-input" id="status_done"
+                  {{ old('status_id', $item->status_id) == 2 ? 'checked' : '' }}>
+            <label class="form-check-label" for="status_done">完了にする</label>
+          </div>
+        @endif
 
         <!-- 更新ボタン群（scopeをボタンで送る） -->
         <div class="mt-4 d-flex flex-wrap gap-2">
@@ -204,53 +208,7 @@
 
     </div>
   </div>
+   <script src="{{ asset('js/calendar.js') }}"></script>
 
-  <!-- sche_start / sche_end を確定（更新時のみ） -->
-  <script>
-  document.getElementById('update-form').addEventListener('submit', function () {
-    const isAllDay = document.getElementById('chk_all_day').checked;
-
-    const startDate = document.querySelector(
-      '#all_day_on:not(.d-none) [name="sche_start_date"], #all_day_off:not(.d-none) [name="sche_start_date"]'
-    ).value;
-
-    const startTime = document.querySelector(
-      '#all_day_off:not(.d-none) [name="sche_start_time"]'
-    )?.value || '00:00:00';
-
-    const endDate = document.querySelector(
-      '#all_day_on:not(.d-none) [name="sche_end_date"]'
-    )?.value || startDate;
-
-    const endTime = document.querySelector(
-      '#all_day_off:not(.d-none) [name="sche_end_time"]'
-    )?.value || '23:59:59';
-
-    document.getElementById('sche_start').value =
-      isAllDay ? `${startDate} 00:00:00` : `${startDate} ${startTime}`;
-
-    document.getElementById('sche_end').value =
-      isAllDay ? `${endDate} 23:59:59` : `${startDate} ${endTime}`;
-  });
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const chkAllDay = document.getElementById('chk_all_day');
-    const allDayOn  = document.getElementById('all_day_on');
-    const allDayOff = document.getElementById('all_day_off');
-
-    function toggleAllDay() {
-      if (chkAllDay.checked) {
-        allDayOn.classList.remove('d-none');
-        allDayOff.classList.add('d-none');
-      } else {
-        allDayOn.classList.add('d-none');
-        allDayOff.classList.remove('d-none');
-      }
-    }
-
-    toggleAllDay();
-    chkAllDay.addEventListener('change', toggleAllDay);
-  });
-  </script>
 </body>
 </html>

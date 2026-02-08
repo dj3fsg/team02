@@ -82,8 +82,8 @@ public function store(ItemStoreRequest $request)
             $item->type_id = $request->has('all_day') ? 2 : 1; 
         }
 
-        // ステータス（HTMLの name="status_id" に合わせる）
-        $item->status_id = $request->has('status_id') ? 2 : 1; 
+        // ステータス(開始時は未完了扱い)
+        $item->status_id =1; 
 
         // ★ここで保存
         $item->save();

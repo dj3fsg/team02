@@ -141,14 +141,7 @@
           <label for="memo" class="form-label">メモ</label>
           <textarea id="memo" name="memo" class="form-control" rows="4" placeholder="補足など">{{ old('memo') }}</textarea>
         </div>
-
-        <!-- 完了 -->
-        <div class="mb-3 form-check">
-          <input type="checkbox" name="status_id" value="2" class="form-check-input" id="status_done"
-                 {{ old('status_id') == 2 ? 'checked' : '' }}>
-          <label class="form-check-label" for="status_done">完了にする</label>
-        </div>
-
+        
         <!-- ボタン -->
         <div class="mt-4 d-flex gap-2">
           <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
