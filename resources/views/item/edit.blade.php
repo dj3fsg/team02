@@ -45,16 +45,17 @@
         <!-- 終日 -->
         <div class="mb-2 form-check">
           <input type="checkbox" id="chk_all_day" name="all_day" class="form-check-input"
-                 {{ old('all_day', $item->type_id == 2) ? 'checked' : '' }}>
+                 {{ old('all_day', $item->type_id == 2) ? 'checked' : '' }} disabled>
           <label class="form-check-label" for="chk_all_day">終日の予定</label>
         </div>
 
         <!-- 日時 -->
         <div class="mb-3">
           <label class="form-label">日時</label>
+          @if ($item->type_id == 2)
 
           <!-- 終日ON -->
-          <div id="all_day_on" class="{{ $item->type_id == 2 ? '' : 'd-none' }}">
+          <div id="all_day_on">
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <input type="date"
                      name="sche_start_date"
@@ -72,9 +73,10 @@
                      value="{{ old('sche_end_date', $item->sche_end ? \Carbon\Carbon::parse($item->sche_end)->format('Y-m-d') : '') }}">
             </div>
           </div>
+          @else
 
           <!-- 終日OFF -->
-          <div id="all_day_off" class="{{ $item->type_id == 2 ? 'd-none' : '' }}">
+          <div id="all_day_off">
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <input type="date"
                      name="sche_start_date"
@@ -97,7 +99,9 @@
                      value="{{ old('sche_end_time', $item->sche_end ? \Carbon\Carbon::parse($item->sche_end)->format('H:i') : '') }}">
             </div>
           </div>
+           @endif
         </div>
+       
 
         <!-- 場所 -->
         <div class="mb-3">

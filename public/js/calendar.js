@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('calendar.js loaded');
 
   // --- 共通ツール ---
   function setDisabled(container, disabled) {

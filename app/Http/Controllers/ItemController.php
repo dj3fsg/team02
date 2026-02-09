@@ -119,7 +119,6 @@ public function store(ItemStoreRequest $request)
 }
  public function update(Request $request, $id)
     {
-        dd($request->all());
         $item = Item::findOrFail($id);
 
         // scope: single / future / all （フォームから来る想定）
