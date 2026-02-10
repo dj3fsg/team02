@@ -35,12 +35,15 @@
         <input type="hidden" name="sche_start" id="sche_start">
         <input type="hidden" name="sche_end"   id="sche_end">
 
+
         <!-- タイトル -->
         <div class="mb-3">
           <label class="form-label">タイトル</label>
           <input type="text" name="title" class="form-control"
                  value="{{ old('title', $item->title) }}">
         </div>
+        @if ($item->subcategory_id == 1)
+
 
         <!-- 終日 -->
         <div class="mb-2 form-check">
@@ -92,7 +95,7 @@
 
               <span>〜</span>
 
-              <input type="time"
+              <input type="time"' '
                      name="sche_end_time"
                      class="form-control"
                      style="max-width:150px"
@@ -101,6 +104,15 @@
           </div>
            @endif
         </div>
+        @else
+         <div id="task_area" class="mb-3">
+          <label class="form-label">期限</label>
+          <div class="d-flex gap-2">
+            <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 300px;"
+                   value="{{ old('sche_done',$item->sche_done) }}">
+          </div>
+        </div>
+        @endif
        
 
         <!-- 場所 -->

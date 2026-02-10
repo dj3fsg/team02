@@ -24,101 +24,117 @@ class ItemController extends Controller
   
 public function store(ItemStoreRequest $request)
 {
-    $validated = $request->validated(); 
-    //日付結合
-     if($request->has('all_day')){
-        $startDateStr = $request->sche_start_date . ' ' . '00:00:00';
-        $endDateStr   = $request->sche_end_date . ' ' . '23:59:59';
+    $validated = $request->validated();
 
-     }else{
-        $startDateStr = $request->sche_start_date . ' ' . $request->sche_start_time;
-        $endDateStr   = $request->sche_start_date . ' ' . $request->sche_end_time;
-     }
-    
-    $originStart = \Carbon\Carbon::parse($startDateStr);
-    $originEnd   = \Carbon\Carbon::parse($endDateStr);
-    $baseStart = $originStart->copy();
-    $baseEnd   = $originEnd->copy();
-    $currentStart = $originStart;
-    $currentEnd = $originEnd;
+    // =========================
+    // 1) 起点日時を type で分岐
+    // =========================
+    if ($request->type === 'schedule') {
 
-    // 2. 期限
-    $until = $request->filled('repeat_until') 
-                ? \Carbon\Carbon::parse($request->repeat_until)->endOfDay() 
-                : $originStart->copy();
+        // schedule：日付結合
+        if ($request->has('all_day')) {
+            $startDateStr = $request->sche_start_date . ' 00:00:00';
+            $endDateStr   = $request->sche_end_date   . ' 23:59:59';
+        } else {
+            $startDateStr = $request->sche_start_date . ' ' . $request->sche_start_time;
+            $endDateStr   = $request->sche_start_date . ' ' . $request->sche_end_time;
+        }
 
-    $maxLoops = 1200;//3年先までを制限にするという想定
-    $count = 1;
-    $repeatId=null;
+        $originStart = \Carbon\Carbon::parse($startDateStr);
+        $originEnd   = \Carbon\Carbon::parse($endDateStr);
 
-    //繰り返しスケジュールの値が０でなければ以下の処理を動かす
-    if($request->repeat !== '0'){
-        //repeatsテーブルへの登録
-        $repeat = Repeat::create([]);
+    } else {
+        // scheduleでない場合（task）：sche_done を起点にする
+        $originStart = \Carbon\Carbon::parse($request->sche_done);
+        $originEnd   = \Carbon\Carbon::parse($request->sche_done);
+    }
+
+    $baseStart    = $originStart->copy();
+    $baseEnd      = $originEnd->copy();
+    $currentStart = $originStart->copy();
+    $currentEnd   = $originEnd->copy();
+
+    // =========================
+    // 2) 繰り返し期限
+    // =========================
+    $until = $request->filled('repeat_until')
+        ? \Carbon\Carbon::parse($request->repeat_until)->endOfDay()
+        : $originStart->copy();
+
+    $maxLoops = 1200;
+    $count    = 1;
+    $repeatId = null;
+
+    // =========================
+    // 3) repeats 作成
+    // =========================
+    if ($request->repeat !== '0') {
+        $repeat   = Repeat::create([]);
         $repeatId = $repeat->id;
     }
 
-    
-
+    // =========================
+    // 4) 登録ループ
+    // =========================
     do {
         $item = new Item();
-        $item->title = $request->title;
-        $item->user_id = auth()->id();
+        $item->title      = $request->title;
+        $item->user_id    = auth()->id();
         $item->repeats_id = $repeatId;
-        $item->location = $request->location; 
-        $item->memo = $request->memo;
+        $item->location   = $request->location;
+        $item->memo       = $request->memo;
+        $item->status_id  = 1; // 未完了
 
-        // スケジュールかタスクかの判定
         if ($request->type === 'schedule') {
+
+            // ---- schedule ----
             $item->subcategory_id = 1;
-            $item->sche_start = $currentStart->toDateTimeString();
-            $item->sche_end   = $currentEnd->toDateTimeString();
-            // 終日判定（HTMLのID ll_day に合わせる）
-            $item->type_id = $request->has('all_day') ? 2 : 1; 
-        } else if ($request->type === 'task') {
+            $item->sche_start     = $currentStart->toDateTimeString();
+            $item->sche_end       = $currentEnd->toDateTimeString();
+            $item->type_id        = $request->has('all_day') ? 2 : 1;
+
+        } else {
+
+            // ---- task ----
             $item->subcategory_id = 2;
-            $item->sche_start = $request->sche_done; // タスク期限
-            $item->sche_end = $request->sche_done;
-            $item->type_id = $request->has('all_day') ? 2 : 1; 
+            $item->sche_done      = $currentStart->toDateTimeString(); // ★ここに保存
+            $item->type_id        = 1;
         }
 
-        // ステータス(開始時は未完了扱い)
-        $item->status_id =1; 
-
-        // ★ここで保存
         $item->save();
 
-       // --- 繰り返し判定を修正 ---
-    // repeatのvalueが文字列か数値か、HTMLと合わせる
-    if ($request->repeat == '0' || $count >= $maxLoops) {
-        break;
-    }
+        // 繰り返しなし or 上限到達
+        if ($request->repeat == '0' || $count >= $maxLoops) {
+            break;
+        }
 
-    $durationSeconds = $baseEnd->diffInSeconds($baseStart);
+        // 加算用の差分
+        $durationSeconds = $baseEnd->diffInSeconds($baseStart);
 
+        // =========================
+        // 5) 日付加算
+        // =========================
+        if ($request->repeat == '1') {
+            $currentStart = $baseStart->copy()->addWeeks($count);
+        } elseif ($request->repeat == '2') {
+            $currentStart = $baseStart->copy()->addMonthsNoOverflow($count);
+        } elseif ($request->repeat == '3') {
+            $currentStart = $baseStart->copy()->addYearsNoOverflow($count);
+        } else {
+            break;
+        }
 
-    // --- 加算処理（1=毎週, 2=毎月, 3=毎年） ---
-    if ($request->repeat == '1') {    
-        $currentStart = $baseStart->copy()->addWeeks($count);
-    } elseif ($request->repeat == '2') {
-        $currentStart = $baseStart->copy()->addMonthsNoOverflow($count);
-    } elseif ($request->repeat == '3') {
-        $currentStart = $baseStart->copy()->addYearsNoOverflow($count);
-    } else {
-        // 想定外の値が来た場合も無限ループ防止で抜ける
-        break; 
-    }
-    $currentEnd = $currentStart->copy()->addSeconds($durationSeconds);
+        $currentEnd = $currentStart->copy()->addSeconds($durationSeconds);
+        $count++;
 
-    $count++;
-// 次の予定が期限内であれば続行
-} while ($currentStart->lte($until));
-
+    } while ($currentStart->lte($until));
 
     return redirect('calendar')->with('success', '登録しました');
 }
+
  public function update(Request $request, $id)
     {
+
         $item = Item::findOrFail($id);
 
         // scope: single / future / all （フォームから来る想定）
@@ -184,7 +200,13 @@ public function store(ItemStoreRequest $request)
                 ->where('user_id', $item->user_id);
 
             if ($scope === 'future') {
-                $q->where('sche_start', '>=', $item->sche_start);
+                if($item->subcategory==1){
+                    $q->where('sche_start', '>=', $item->sche_start);
+
+                }else{
+                    $q->where('sche_done', '>=', $item->sche_done);
+                }
+                
             } elseif ($scope === 'all') {
                 // そのまま全件
             } else {
@@ -212,28 +234,32 @@ public function store(ItemStoreRequest $request)
     // =========================
     // 共通：Request → Item 反映
     // =========================
-    private function applyUpdateFromRequest(Item $item, Request $request): void
+        private function applyUpdateFromRequest(Item $item, Request $request): void
     {
-        
-        $item->title     = $request->title;
-        $item->location  = $request->location;
-        $item->memo      = $request->memo;
+        $item->title    = $request->title;
+        $item->location = $request->location;
+        $item->memo     = $request->memo;
 
-        // （checkboxの有無判定）
+        // checkboxの有無で判定（完了：2 / 未完了：1）
         $item->status_id = $request->has('status_id') ? 2 : 1;
 
-        if ($request->has('all_day')) {
-        // 画面の入力（date）を優先
-        $item->sche_start = $request->sche_start;
-        $item->sche_end   = $request->sche_end;
-        $item->type_id    = 2;
-    } else {
-        $item->sche_start = $request->sche_start_date . ' ' . $request->sche_start_time;
-        $item->sche_end   = $request->sche_start_date   . ' ' . $request->sche_end_time;
-        $item->type_id    = 1;
+        // subcategory_id: 1=スケジュール, それ以外=タスク想定
+        if ($item->subcategory_id == 1) {
+            if ($request->has('all_day')) {
+                // 画面の入力（date）を優先
+                $item->sche_start = $request->sche_start;
+                $item->sche_end   = $request->sche_end;
+                $item->type_id    = 2; // 終日
+            } else {
+                $item->sche_start = $request->sche_start_date . ' ' . $request->sche_start_time;
+                $item->sche_end   = $request->sche_start_date . ' ' . $request->sche_end_time;
+                $item->type_id    = 1; // 時刻あり
+            }
+        } else {
+            $item->sche_done = $request->sche_done;
+        }
     }
 
-    }
         private function applyUpdateFromRequestWithoutDate(Item $item, Request $request): void
     {
         $item->title     = $request->title;

@@ -103,7 +103,7 @@
           </div>
         </div>
 
-        <!-- タスク -->
+        <!-- タスク期限 -->
         <div id="task_area" class="d-none mb-3">
           <label class="form-label">期限</label>
           <div class="d-flex gap-2">
