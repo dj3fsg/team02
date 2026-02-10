@@ -8,7 +8,7 @@
   @include('parts.head')
 
   <style>
-    .form-wrap { max-width: 600px; margin: 0 auto; }
+    .form-wrap { max-width: 650px; margin: 0 auto; }
   </style>
 </head>
 
@@ -16,7 +16,9 @@
   @include('parts.header')
 
   <div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
-    <h1 class="h2">予定編集</h1>
+    <h1 class="h2">
+      {{ $item->subcategory_id == 1 ? '予定編集' : 'タスク編集' }}
+    </h1>
   </div>
 
   <div class="container-sm p-3">
@@ -108,7 +110,7 @@
          <div id="task_area" class="mb-3">
           <label class="form-label">期限</label>
           <div class="d-flex gap-2">
-            <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 300px;"
+            <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 200px;"
                    value="{{ old('sche_done',$item->sche_done) }}">
           </div>
         </div>
@@ -139,17 +141,22 @@
           </div>
         @endif
 
+        @php
+          $isSchedule = (int)old('subcategory_id', $item->subcategory_id) === 1;
+          $label      = $isSchedule ? '予定' : 'タスク';
+        @endphp
+
         <!-- 更新ボタン群（scopeをボタンで送る） -->
         <div class="mt-4 d-flex flex-wrap gap-2">
           <a href="{{ url('calendar') }}" class="btn btn-outline-secondary">戻る</a>
 
-          {{-- シリーズ無し/有り 共通：この予定のみ更新 --}}
+          {{-- シリーズ無し/有り 共通：単体更新 --}}
           <button type="submit"
                   name="scope"
                   value="single"
                   class="btn btn-primary"
-                  onclick="return confirm('この予定のみ更新してもよろしいですか？');">
-            この予定のみ更新
+                  onclick="return confirm('この{{ $label }}のみ更新してもよろしいですか？');">
+            この{{ $label }}のみ更新
           </button>
 
           {{-- シリーズ有りのみ表示 --}}
@@ -158,69 +165,70 @@
                     name="scope"
                     value="future"
                     class="btn btn-warning"
-                    onclick="return confirm('これ以降の予定を更新してもよろしいですか？');">
-              これ以降の予定を更新
+                    onclick="return confirm('これ以降の{{ $label }}を更新してもよろしいですか？');">
+              これ以降の{{ $label }}を更新
             </button>
 
             <button type="submit"
                     name="scope"
                     value="all"
                     class="btn btn-danger"
-                    onclick="return confirm('すべての予定を更新してもよろしいですか？');">
-              すべての予定を更新
+                    onclick="return confirm('すべての{{ $label }}を更新してもよろしいですか？');">
+              すべての{{ $label }}を更新
             </button>
           @endif
         </div>
-      </form>
+        </form>
 
-      {{-- =======================
-           削除フォーム（更新フォームと分離）
-           ======================= --}}
-      <div class="mt-4 border-top pt-3">
-        <div class="d-flex flex-wrap gap-2">
+        {{-- =======================
+            削除フォーム（更新フォームと分離）
+            ======================= --}}
+        <div class="mt-4 border-top pt-3">
+          <div class="d-flex flex-wrap gap-2">
 
-          {{-- シリーズ無し/有り 共通：この予定のみ削除 --}}
-          <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
-            @csrf
-            @method('DELETE')
-            <button type="submit"
-                    name="scope"
-                    value="single"
-                    class="btn btn-outline-danger"
-                    onclick="return confirm('この予定のみ削除してもよろしいですか？');">
-              この予定のみ削除
-            </button>
-          </form>
-
-          {{-- シリーズ有りのみ表示 --}}
-          @if(!empty($item->repeats_id))
+            {{-- シリーズ無し/有り 共通：単体削除 --}}
             <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
               @csrf
               @method('DELETE')
               <button type="submit"
                       name="scope"
-                      value="future"
-                      class="btn btn-outline-warning"
-                      onclick="return confirm('これ以降の予定を削除してもよろしいですか？');">
-                これ以降の予定を削除
+                      value="single"
+                      class="btn btn-outline-danger"
+                      onclick="return confirm('この{{ $label }}のみ削除してもよろしいですか？');">
+                この{{ $label }}のみ削除
               </button>
             </form>
 
-            <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
-              @csrf
-              @method('DELETE')
-              <button type="submit"
-                      name="scope"
-                      value="all"
-                      class="btn btn-outline-dark"
-                      onclick="return confirm('すべての予定を削除してもよろしいですか？');">
-                すべての予定を削除
-              </button>
-            </form>
-          @endif
+            {{-- シリーズ有りのみ表示 --}}
+            @if(!empty($item->repeats_id))
+              <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                        name="scope"
+                        value="future"
+                        class="btn btn-outline-warning"
+                        onclick="return confirm('これ以降の{{ $label }}を削除してもよろしいですか？');">
+                  これ以降の{{ $label }}を削除
+                </button>
+              </form>
 
+              <form method="POST" action="{{ url('calendar/delete/' . $item->id) }}">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                        name="scope"
+                        value="all"
+                        class="btn btn-outline-dark"
+                        onclick="return confirm('すべての{{ $label }}を削除してもよろしいですか？');">
+                  すべての{{ $label }}を削除
+                </button>
+              </form>
+            @endif
+
+          </div>
         </div>
-      </div>
+
 
     </div>
   </div>
