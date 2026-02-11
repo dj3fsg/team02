@@ -12,15 +12,27 @@ class AccountStoreRequest extends FormRequest
 
     public function rules(): array
     {
+        $date = $this->input('date');
+
+        $maxUntil = $date
+            ? Carbon::parse($date)->addYears(2)->toDateString()
+            : null;
+
         return [
-            'date'                => 'required|date',
-            'account_category_id' => 'required|integer|exists:account_categories,id',
-            'subcategory_id'      => 'required|in:3,4',
-            'title'               => 'nullable|string|max:255',
-            'amount'              => 'required|numeric|min:0',
-            'memo'                => 'nullable|string|max:255',
-            'repeat'             => 'nullable|in:0,1,2,3',
-            'repeat_until'       => 'nullable|date|after_or_equal:date',
+            'date'                => ['required', 'date'],
+            'account_category_id' => ['required', 'integer', 'exists:account_categories,id'],
+            'subcategory_id'      => ['required', 'in:3,4'],
+            'title'               => ['nullable', 'string', 'max:255'],
+            'amount'              => ['required', 'numeric', 'min:0'],
+            'memo'                => ['nullable', 'string', 'max:255'],
+            'repeat'              => ['nullable', 'in:0,1,2,3'],
+
+            'repeat_until'        => array_values(array_filter([
+                'nullable',
+                'date',
+                'after_or_equal:date',
+                $maxUntil ? 'before_or_equal:' . $maxUntil : null, // ←開始日から2年以内
+            ])),
         ];
     }
 
@@ -41,9 +53,11 @@ class AccountStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
+            //日付
             'date.required' => ':attributeは必須です。',
             'date.date'     => ':attributeの形式が正しくありません。',
 
+            //金額
             'amount.required' => ':attributeを入力してください。',
             'amount.numeric'  => ':attributeは数値で入力してください。',
             'amount.min'      => ':attributeは0以上で入力してください。',
@@ -55,6 +69,13 @@ class AccountStoreRequest extends FormRequest
             // カテゴリ
             'account_category_id.required' => 'カテゴリを選択してください。',
             'account_category_id.exists'   => '選択されたカテゴリは区分と一致していません。',
+
+            //繰り返し期限
+             'repeat_until.date' => '繰り返し期限は正しい日付を入力してください。',
+            'repeat_until.after_or_equal' =>
+                '繰り返し期限は開始日以降の日付を指定してください。',
+            'repeat_until.before_or_equal' =>
+                '繰り返し期限は開始日から2年以内で指定してください。',
         ];
     }
 

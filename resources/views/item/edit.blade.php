@@ -123,7 +123,7 @@
          <div id="task_area" class="mb-3">
           <label class="form-label">期限</label>
           <div class="d-flex gap-2">
-            <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 150px;"
+            <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 200px;"
                    value="{{ old('sche_done',$item->sche_done) }}">
           </div>
         </div>

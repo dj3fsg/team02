@@ -67,19 +67,36 @@ class ItemStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $startDate = $this->input('sche_start_date');
+
+        $maxUntil = $startDate
+            ? Carbon::parse($startDate)->addYears(2)->toDateString()
+            : null;
+
         return [
+            // 種別
             'type'  => ['required', 'in:schedule,task'],
+            
+            // タイトル
             'title' => ['required', 'string', 'max:255'],
 
             // schedule のとき
             'sche_start_date' => ['required_if:type,schedule', 'date'],
             'sche_end_date'   => ['nullable', 'date', 'after_or_equal:sche_start_date'],
 
-            // 終日じゃない場合だけ時刻必須（終日なら除外）
-            'sche_start_time' => ['exclude_if:all_day,on', 'required_if:type,schedule', 'date_format:H:i'],
-            'sche_end_time'   => ['exclude_if:all_day,on', 'required_if:type,schedule', 'date_format:H:i'],
+            // 終日じゃない場合だけ時刻必須
+            'sche_start_time' => [
+                'exclude_if:all_day,on',
+                'required_if:type,schedule',
+                'date_format:H:i'
+            ],
+            'sche_end_time'   => [
+                'exclude_if:all_day,on',
+                'required_if:type,schedule',
+                'date_format:H:i'
+            ],
 
-            // prepareForValidation で merge する想定の結合済み日時
+            // merge済み日時
             'sche_start' => ['nullable', 'date'],
             'sche_end'   => ['nullable', 'date', 'after_or_equal:sche_start'],
 
@@ -89,8 +106,15 @@ class ItemStoreRequest extends FormRequest
             'memo'     => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
 
-            'repeat'       => ['nullable', 'integer', 'in:0,1,2,3'],
-            'repeat_until' => ['nullable', 'date', 'after_or_equal:sche_start_date'],
+            'repeat' => ['nullable', 'integer', 'in:0,1,2,3'],
+
+            // 繰り返し期限（2年以内）
+            'repeat_until' => array_values(array_filter([
+                'nullable',
+                'date',
+                'after_or_equal:sche_start_date',
+                $maxUntil ? 'before_or_equal:' . $maxUntil : null,
+            ])),
         ];
     }
 
@@ -119,7 +143,7 @@ class ItemStoreRequest extends FormRequest
 
             // 繰り返し
             'repeat'       => '繰り返し',
-            'repeat_until' => '繰り返し終了日',
+            'repeat_until' => '繰り返し期限',
 
             // UI
             'all_day' => '終日',
@@ -161,6 +185,18 @@ class ItemStoreRequest extends FormRequest
 
             // task のとき必須（必要なら）
             'sche_done.required_if'       => 'タスクを登録する場合、期限日時は必須です。',
+
+             // repeat
+            'repeat.in' => '正しい繰り返し設定を選択してください。',
+
+            'repeat_until.required_if' =>
+                '繰り返し期限を指定してください。',
+            'repeat_until.date' =>
+                '繰り返し期限は正しい日付を入力してください。',
+            'repeat_until.after_or_equal' =>
+                '繰り返し期限は開始日以降の日付を指定してください。',
+            'repeat_until.before_or_equal' =>
+                '繰り返し期限は開始日から2年以内で指定してください。',
         ];
     }
 

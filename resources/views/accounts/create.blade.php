@@ -65,9 +65,20 @@
               <option value="3" {{ old('repeat') === '3' ? 'selected' : '' }}>毎年</option>
             </select>
 
-            <label class="form-label mb-0">繰り返し期限</label>
-            <input type="date" id="repeat_until" name="repeat_until" class="form-control" style="max-width: 200px;"
-                   value="{{ old('repeat_until') }}">
+            <label for="repeat_until" class="form-label mb-0">
+              繰り返し期限
+            </label>
+
+            <input
+              type="date"
+              id="repeat_until"
+              name="repeat_until"
+              class="form-control @error('repeat_until') is-invalid @enderror"
+              style="max-width: 200px;"
+              value="{{ old('repeat_until') }}"
+              min="{{ old('date') }}"
+              max="{{ old('date') ? \Carbon\Carbon::parse(old('date'))->addYears(2)->toDateString() : '' }}"
+            >
           </div>
         </div>
 

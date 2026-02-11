@@ -20,7 +20,7 @@
   @include('parts.header')
 
   <div class="p-3 pb-2 d-flex align-items-center justify-content-center bg-info-subtle">
-    <h1 class="h2">予定作成</h1>
+    <h1 class="h2">予定・タスク作成</h1>
   </div>
 
   <div class="container-sm p-3">
@@ -126,11 +126,25 @@
               <option value="3" {{ old('repeat') === '3' ? 'selected' : '' }}>毎年</option>
             </select>
 
-            <label class="form-label mb-0">繰り返し期限</label>
-            <input type="date" id="repeat_until" name="repeat_until" class="form-control" style="max-width: 200px;"
-                   value="{{ old('repeat_until') }}">
-          </div>
-        </div>
+            <label for="repeat_until" class="form-label mb-0">
+              繰り返し期限
+            </label>
+
+            <input
+              type="date"
+              id="repeat_until"
+              name="repeat_until"
+              class="form-control @error('repeat_until') is-invalid @enderror"
+              style="max-width: 200px;"
+              value="{{ old('repeat_until') }}"
+              min="{{ old('sche_start_date') }}"
+              max="{{ old('sche_start_date') 
+                      ? \Carbon\Carbon::parse(old('sche_start_date'))->addYears(2)->toDateString()
+                      : '' }}"
+            >
+            </div>  <!-- d-flex を閉じる -->
+        </div> 
+
 
         <!-- 場所 -->
         <div class="mb-3">
