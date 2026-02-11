@@ -36,17 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const allDayOn = document.getElementById('all_day_on');
   const allDayOff = document.getElementById('all_day_off');
 
-  // -----------------------------
-  // Debug: 読み込み確認（必要なら残してOK）
-  // -----------------------------
-  // console.log('calendar.js loaded', {
-  //   typeSchedule, typeTask, scheduleArea, taskArea,
-  //   chkAllDay, allDayOn, allDayOff
-  // });
-
-  // -----------------------------
-  // All-day toggle
-  // -----------------------------
   function toggleAllDay() {
     // 要素が無い画面（タスクだけ等）でも落ちない
     if (!chkAllDay || !allDayOn || !allDayOff) return;

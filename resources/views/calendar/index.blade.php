@@ -30,6 +30,7 @@
         <h4>今日の予定 / タスク</h4>
         <ul id="side-items"></ul>
       </section>
+      </section>
 
       <section>
         <h4>今日の収入 / 支出</h4>
@@ -226,36 +227,70 @@
         const dayStart = new Date(dateStr + 'T00:00:00+09:00');
         const dayEnd   = new Date(dateStr + 'T23:59:59+09:00');
 
-        const todayItems = items
-          .filter(i => {
-            if (!i.sche_start) return false;
+      const todayItems = items
+        .filter(i => {
+          // 判定に使う開始・終了を統一
+          // 予定: sche_start/sche_end
+          // タスク: sche_done を開始・終了扱い（1日）
+          const startStr = i.sche_start || i.sche_done;
+          if (!startStr) return false;
 
-            // sche_start/sche_end を Date に
-            const start = toDateJST(i.sche_start);
-            const end   = i.sche_end ? toDateJST(i.sche_end) : start;
+          const start = toDateJST(startStr);
+          if (isNaN(start.getTime())) return false;
 
-            // その日のどこかにかかっていればOK（終日/時間指定/期間指定 全対応）
-            return start <= dayEnd && end >= dayStart;
-          })
-          .sort((a, b) => toDateJST(a.sche_start) - toDateJST(b.sche_start));
+          const endStr = i.sche_end || startStr;
+          const end = toDateJST(endStr);
+          if (isNaN(end.getTime())) return false;
+
+          // 当日に少しでも重なれば表示
+          return start <= dayEnd && end >= dayStart;
+        })
+        .sort((a, b) => {
+          const aKey = toDateJST(a.sche_start || a.sche_done);
+          const bKey = toDateJST(b.sche_start || b.sche_done);
+          return aKey - bKey;
+        });
+
+
 
         if (todayItems.length === 0) {
           itemList.innerHTML = '<li>予定はありません</li>';
         } else {
-          todayItems.forEach(i => {
-            const time = i.sche_start ? i.sche_start.slice(11, 16) : '';
-            const status = i.status_id == 1 ? '未' : '済';
+            todayItems.forEach(i => {
+            const isSchedule = (i.subcategory_id == 1);
+            const isTask     = !isSchedule;
 
-            const type =
-              i.subcategory_id == 1 ? '予定' :
-              i.subcategory_id == 2 ? 'タスク' :
-              '不明';
+            // 種別
+            const type = isSchedule ? '予定' : 'タスク';
+
+            // 時刻（予定は開始、タスクは期限）
+            // 文字列が "YYYY-MM-DD HH:MM:SS" でも "YYYY-MM-DDTHH:MM:SS..." でも対応
+            const dtStr = isSchedule ? i.sche_start : i.sche_done;
+            const time = dtStr
+              ? dtStr.replace('T', ' ').slice(11, 16)
+              : '';
+
+            // 終日（type_id==2 の予定なら "終日" を優先表示）
+            const timeLabel = (isSchedule && i.type_id == 2)
+              ? '終日'
+              : time;
+
+            // 完了ステータス（タスクだけ）
+            const status = isTask
+              ? (i.status_id == 2 ? '済' : '未')   // 2を済、それ以外を未に寄せると事故りにくい
+              : '';
 
             const li = document.createElement('li');
-            li.textContent = `【${type}】[${status}] ${time} ${i.title}`;
+
+            const statusPart = status ? `[${status}] ` : '';
+            const timePart = timeLabel ? `${timeLabel} ` : '';
+
+            li.textContent = `【${type}】${statusPart}${timePart}${i.title}`;
             itemList.appendChild(li);
           });
         }
+
+
 
         // --- 収支 ---
         const accList = document.getElementById('side-accounts');
@@ -277,7 +312,7 @@
 
             const li = document.createElement('li');
             li.classList.add(isExpense ? 'expense' : 'income');
-            li.textContent = `${label} ${sign}¥${Number(a.amount).toLocaleString()} ${a.title}`;
+            li.textContent = `${label} ${sign}¥${Number(a.amount).toLocaleString()} ${a.title ?? ''}`;
             accList.appendChild(li);
           });
         }

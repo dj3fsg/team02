@@ -5,8 +5,6 @@
  * - バリデーションエラー時：old(account_category_id) を復元
  */
 document.addEventListener('DOMContentLoaded', function () {
-
-  console.log('[account.js] loaded');
  
   const repeatSelect = document.getElementById('repeat_id');
   const repeatUntil = document.getElementById('repeat_until');

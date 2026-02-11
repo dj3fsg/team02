@@ -22,18 +22,40 @@ class CalendarController extends Controller
         $startOfMonth = $baseDate->copy()->startOfMonth();
         $endOfMonth   = $baseDate->copy()->endOfMonth();
 
-        // 月内に「重なる」予定を全部取る（重要）
+        // 月内に「重なる」予定・タスクを全部取る
         $itemsInMonth = Item::where('user_id', $userId)
-            ->where('status_id', '<>', 99)
-            ->whereDate('sche_start', '<=', $endOfMonth)
-            ->whereDate('sche_end', '>=', $startOfMonth)
-            ->get();
+        ->where('status_id', '<>', 99)
+        ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+            $q->where(function ($q2) use ($startOfMonth, $endOfMonth) {
+                // 予定：月に重なる
+                $q2->where('subcategory_id', 1)
+                    ->whereDate('sche_start', '<=', $endOfMonth)
+                    ->whereDate('sche_end',   '>=', $startOfMonth);
+            })
+            ->orWhere(function ($q2) use ($startOfMonth, $endOfMonth) {
+                // タスク：期限が月内
+                $q2->where('subcategory_id', '<>', 1)
+                    ->whereNotNull('sche_done')
+                    ->whereDate('sche_done', '>=', $startOfMonth)
+                    ->whereDate('sche_done', '<=', $endOfMonth);
+            });
+        })
+        ->get();
+
 
         // 日別件数（期間を各日に展開してカウント）
         $itemCounts = [];
         foreach ($itemsInMonth as $item) {
-            $s = Carbon::parse($item->sche_start)->startOfDay();
-            $e = Carbon::parse($item->sche_end)->startOfDay();
+            if ($item->subcategory_id == 1) {
+                // 予定：期間
+                $s = Carbon::parse($item->sche_start)->startOfDay();
+                $e = Carbon::parse($item->sche_end)->startOfDay();
+            } else {
+                // タスク：期限日（1日）
+                if (empty($item->sche_done)) continue; // 念のため
+                $s = Carbon::parse($item->sche_done)->startOfDay();
+                $e = $s->copy();
+            }
 
             $from = $s->copy()->max($startOfMonth);
             $to   = $e->copy()->min($endOfMonth);
@@ -69,6 +91,7 @@ class CalendarController extends Controller
                 'title' => $item->title,
                 'sche_start' => $item->sche_start,
                 'sche_end' => $item->sche_end,
+                'sche_done' => $item->sche_done,
                 'type_id' => $item->type_id,
                 'status_id' => $item->status_id,
                 'subcategory_id' => $item->subcategory_id,

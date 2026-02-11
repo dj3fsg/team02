@@ -49,7 +49,7 @@ class DayController extends Controller
                     $s = Carbon::parse($item->sche_start)->format('H:i');
                     $e = Carbon::parse($item->sche_end)->format('H:i');
                     $item->display_time = "{$s} 〜 {$e}";
-                }ぎ
+                }
                
             }else{
                 $d = Carbon::parse($item->sche_done)->format('H:i');
