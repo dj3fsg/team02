@@ -34,7 +34,15 @@
           「この{{ $item->subcategory_id == 1 ? '予定' : 'タスク' }}のみ更新」
           ボタン押下時に確定されます。
       </div>
-
+      @if ($errors->any())
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
       {{-- =======================
            更新フォーム
            ======================= --}}
