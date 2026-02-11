@@ -21,27 +21,43 @@ class DayController extends Controller
 
         // 予定 / タスク
         $items = Item::where('user_id', $userId)
-            ->where('status_id', '<>', 99)
-            // 「当日($date)に重なる」条件：sche_start <= date <= sche_end
-            ->whereDate('sche_start', '<=', $date)
-            ->whereDate('sche_end', '>=', $date)
-            // 並び順：終日(type_id=2)を上に、それ以外は開始時刻順
-            ->orderByRaw('CASE WHEN type_id = 2 THEN 0 ELSE 1 END')
-            ->orderBy('sche_start', 'asc')
-            ->get();
+                ->where('status_id', '<>', 99)
+                ->where(function ($q) use ($date) {
+                    $q->where(function ($q2) use ($date) {
+                        // 予定：当日に重なる（開始<=当日<=終了）
+                        $q2->whereDate('sche_start', '<=', $date)
+                            ->whereDate('sche_end',   '>=', $date);
+                    })
+                    // タスク：当日が期限
+                    ->orWhereDate('sche_done', $date);
+                })
+                ->orderByRaw('CASE WHEN type_id = 2 THEN 0 ELSE 1 END')
+                ->orderBy('sche_start', 'asc')
+                ->get();
+
 
         // 表示用の時間文字列を付与（Bladeを簡単にする）
         $items->transform(function ($item) {
             // 終日
-            if ((int) $item->type_id === 2) {
-                $item->display_time = '00:00 〜 23:59';
-                return $item;
+            
+
+            if($item->subcategory_id == 1){
+                if ((int) $item->type_id === 2) {
+                    $item->display_time = '終日';
+                }else{
+                // 時刻あり（sche_start/sche_end）
+                    $s = Carbon::parse($item->sche_start)->format('H:i');
+                    $e = Carbon::parse($item->sche_end)->format('H:i');
+                    $item->display_time = "{$s} 〜 {$e}";
+                }ぎ
+               
+            }else{
+                $d = Carbon::parse($item->sche_done)->format('H:i');
+                $item->display_time = " 〜 {$d}";
+
             }
 
-            // 時刻あり（sche_start/sche_endがある前提）
-            $s = Carbon::parse($item->sche_start)->format('H:i');
-            $e = Carbon::parse($item->sche_end)->format('H:i');
-            $item->display_time = "{$s} 〜 {$e}";
+            
 
             return $item;
         });

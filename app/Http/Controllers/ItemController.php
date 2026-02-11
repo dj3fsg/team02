@@ -83,7 +83,7 @@ public function store(ItemStoreRequest $request)
         $item->repeats_id = $repeatId;
         $item->location   = $request->location;
         $item->memo       = $request->memo;
-        $item->status_id  = 1; // 未完了
+        
 
         if ($request->type === 'schedule') {
 
@@ -92,6 +92,7 @@ public function store(ItemStoreRequest $request)
             $item->sche_start     = $currentStart->toDateTimeString();
             $item->sche_end       = $currentEnd->toDateTimeString();
             $item->type_id        = $request->has('all_day') ? 2 : 1;
+            $item->status_id  = 0; 
 
         } else {
 
@@ -99,6 +100,7 @@ public function store(ItemStoreRequest $request)
             $item->subcategory_id = 2;
             $item->sche_done      = $currentStart->toDateTimeString(); // ★ここに保存
             $item->type_id        = 1;
+            $item->status_id  = 1; // 未完了
         }
 
         $item->save();

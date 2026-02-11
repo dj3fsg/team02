@@ -45,14 +45,23 @@
 
                 <td>{{ $item->title }}</td>
 
-                <td>{{ $item->subcategory->subcategory ?? '予定' }}</td>
+                <td>
+                  @if ($item->subcategory_id == 1)
+                      予定
+                  @elseif ($item->subcategory_id == 2)
+                      タスク
+                  @endif
+                </td>
 
                 <td>
-                  @if ($item->status_id == 1)
+                 @if ($item->status_id == 1)
                     未
-                  @else
+                @elseif ($item->status_id == 2)
                     済
-                  @endif
+                @else
+                    -
+                @endif
+
                 </td>
 
                 <td>{{ $item->location ?? '-' }}</td>
