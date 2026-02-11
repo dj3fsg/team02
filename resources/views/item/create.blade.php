@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>予定作成</title>
+  <title>予定・タスク作成</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   @include('parts.head')
@@ -60,7 +60,10 @@
         <!-- タイトル -->
         <div class="mb-3">
           <label for="title" class="form-label">タイトル</label>
-          <input type="text" id="title" name="title" class="form-control"
+          <input type="text" 
+            id="title" name="title" class="form-control"
+            style="max-width: 420px;"
+            maxlength="255"
             value="{{ old('title') }}" placeholder="例：打合せ" >
         </div>
 
@@ -78,12 +81,12 @@
               <input type="date"
                 name="sche_start_date"
                 class="form-control"
-                style="max-width: 200px;"
+                style="max-width: 150px;"
                 value="{{ old('sche_start_date') }}"
                 min="{{ now()->toDateString() }}">
 
               <span>〜</span>
-              <input type="date" name="sche_end_date" class="form-control" style="max-width: 200px;"
+              <input type="date" name="sche_end_date" class="form-control" style="max-width: 150px;"
                      value="{{ old('sche_end_date') }}">
             </div>
           </div>
@@ -92,12 +95,12 @@
           <div id="all_day_off" class="mb-3">
             <label class="form-label">日時</label>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-              <input type="date" name="sche_start_date" class="form-control" style="max-width: 200px;"
+              <input type="date" name="sche_start_date" class="form-control" style="max-width: 150px;"
                      value="{{ old('sche_start_date') }}">
-              <input type="time" name="sche_start_time" class="form-control" style="max-width: 150px;"
+              <input type="time" name="sche_start_time" class="form-control" style="max-width: 100px;"
                      value="{{ old('sche_start_time') }}">
               <span>〜</span>
-              <input type="time" name="sche_end_time" class="form-control" style="max-width: 150px;"
+              <input type="time" name="sche_end_time" class="form-control" style="max-width: 100px;"
                      value="{{ old('sche_end_time') }}">
             </div>
           </div>
@@ -133,13 +136,14 @@
         <div class="mb-3">
           <label for="location" class="form-label">場所</label>
           <input type="text" id="location" name="location" class="form-control"
+          maxlength="255"
             value="{{ old('location') }}" placeholder="例：会議室A">
         </div>
 
         <!-- メモ -->
         <div class="mb-3">
           <label for="memo" class="form-label">メモ</label>
-          <textarea id="memo" name="memo" class="form-control" rows="4" placeholder="補足など">{{ old('memo') }}</textarea>
+          <textarea id="memo" name="memo" class="form-control" rows="4" maxlength="255" placeholder="補足など">{{ old('memo') }}</textarea>
         </div>
         
         <!-- ボタン -->

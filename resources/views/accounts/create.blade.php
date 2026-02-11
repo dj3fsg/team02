@@ -104,6 +104,7 @@
             type="number"
             name="amount"
             class="form-control"
+            style="max-width: 200px;"
             inputmode="numeric"
             value="{{ old('amount') }}"
           >
@@ -115,6 +116,7 @@
           <input
             type="text"
             name="title"
+            style="max-width: 420px;"
             class="form-control"
             value="{{ old('title') }}"
           >
@@ -124,6 +126,7 @@
         name="account_category_id"
         id="account_category_id"
         class="form-select"
+        style="max-width: 200px;"
         data-old="{{ old('account_category_id') }}"
       >
         <option value="">選択してください</option>
@@ -149,6 +152,8 @@
           <input
             type="text"
             name="memo"
+            rows="4"
+            maxlength="255"
             class="form-control"
             value="{{ old('memo') }}"
           >

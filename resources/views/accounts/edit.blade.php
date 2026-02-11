@@ -11,6 +11,15 @@
 
   <div class="container-sm p-3">
     <div class="mx-auto bg-white p-4 rounded-3 shadow-sm" style="max-width: 520px;">
+      <div class="alert alert-warning small mb-3">
+        <strong>注意：</strong><br>
+          ・一括編集では日付は変更されません。<br>
+          ・終日予定、時間指定の切り替えは不可です。<br>
+          ・入力内容は
+          「この収支のみ更新」
+          ボタン押下時に確定されます。
+      </div>
+      
 
       {{-- =======================
            更新フォーム
@@ -64,22 +73,24 @@
         </div>
 
         {{-- 金額 --}}
-        <div class="mb-3">
+        <div class="mb-2">
           <label class="form-label">金額</label>
           <input type="number"
                  name="amount"
                  value="{{ old('amount', (int) $account->amount) }}"
                  class="form-control"
                  inputmode="numeric"
+                 style="max-width: 200px;"
                  required>
         </div>
 
         {{-- タイトル --}}
-        <div class="mb-3">
+        <div class="mb-2">
           <label class="form-label">タイトル</label>
           <input type="text"
                  name="title"
                  value="{{ old('title', $account->title) }}"
+                 style="max-width: 420px;"
                  class="form-control">
         </div>
 
@@ -94,6 +105,7 @@
           <select name="account_category_id"
                   id="account_category_id"
                   class="form-select"
+                  style="max-width: 200px;"
                   data-old="{{ old('account_category_id', $account->account_category_id ?? '') }}"
                   data-income='@json($incomeCategories->map(fn($c) => ["id" => $c->id, "name" => $c->name])->values())'
                   data-expense='@json($expenseCategories->map(fn($c) => ["id" => $c->id, "name" => $c->name])->values())'>

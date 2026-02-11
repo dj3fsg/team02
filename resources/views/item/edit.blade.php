@@ -21,8 +21,19 @@
     </h1>
   </div>
 
+
   <div class="container-sm p-3">
+    
+  
     <div class="form-wrap bg-white p-4 rounded-3 shadow-sm">
+      <div class="alert alert-warning small">
+        <strong>注意：</strong><br>
+          ・一括編集では日付{{ $item->subcategory_id == 1 ? '・時刻' : '' }}は変更されません。<br>
+          ・終日予定、時間指定の切り替えは不可です。<br>
+          ・入力内容は
+          「この{{ $item->subcategory_id == 1 ? '予定' : 'タスク' }}のみ更新」
+          ボタン押下時に確定されます。
+      </div>
 
       {{-- =======================
            更新フォーム
@@ -42,6 +53,8 @@
         <div class="mb-3">
           <label class="form-label">タイトル</label>
           <input type="text" name="title" class="form-control"
+                style="max-width: 420px;"
+                maxlength="255"
                  value="{{ old('title', $item->title) }}">
         </div>
         @if ($item->subcategory_id == 1)
@@ -65,7 +78,7 @@
               <input type="date"
                      name="sche_start_date"
                      class="form-control"
-                     style="max-width:200px"
+                     style="max-width:150px"
                      value="{{ old('sche_start_date', \Carbon\Carbon::parse($item->sche_start ?? now())->format('Y-m-d')) }}"
                      min="{{ now()->toDateString() }}">
 
@@ -74,7 +87,7 @@
               <input type="date"
                      name="sche_end_date"
                      class="form-control"
-                     style="max-width:200px"
+                     style="max-width:150px"
                      value="{{ old('sche_end_date', $item->sche_end ? \Carbon\Carbon::parse($item->sche_end)->format('Y-m-d') : '') }}">
             </div>
           </div>
@@ -86,13 +99,13 @@
               <input type="date"
                      name="sche_start_date"
                      class="form-control"
-                     style="max-width:200px"
+                     style="max-width:150px"
                      value="{{ old('sche_start_date', \Carbon\Carbon::parse($item->sche_start)->format('Y-m-d')) }}">
 
               <input type="time"
                      name="sche_start_time"
                      class="form-control"
-                     style="max-width:150px"
+                     style="max-width:100px"
                      value="{{ old('sche_start_time', \Carbon\Carbon::parse($item->sche_start)->format('H:i')) }}">
 
               <span>〜</span>
@@ -100,7 +113,7 @@
               <input type="time"' '
                      name="sche_end_time"
                      class="form-control"
-                     style="max-width:150px"
+                     style="max-width:100px"
                      value="{{ old('sche_end_time', $item->sche_end ? \Carbon\Carbon::parse($item->sche_end)->format('H:i') : '') }}">
             </div>
           </div>
@@ -110,7 +123,7 @@
          <div id="task_area" class="mb-3">
           <label class="form-label">期限</label>
           <div class="d-flex gap-2">
-            <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 200px;"
+            <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 150px;"
                    value="{{ old('sche_done',$item->sche_done) }}">
           </div>
         </div>
@@ -121,13 +134,15 @@
         <div class="mb-3">
           <label class="form-label">場所</label>
           <input type="text" name="location" class="form-control"
+                style="max-width:420px"
+                maxlength="255"
                  value="{{ old('location', $item->location) }}">
         </div>
 
-        <!-- 備考 -->
+        <!-- メモ -->
         <div class="mb-3">
-          <label class="form-label">備考</label>
-          <textarea name="memo" class="form-control" rows="4">{{ old('memo', $item->memo) }}</textarea>
+          <label class="form-label">メモ</label>
+          <textarea name="memo" class="form-control" rows="4" maxlength="255">{{ old('memo', $item->memo) }}</textarea>
         </div>
 
         <input type="hidden" id="subcategory_id" value="{{ $item->subcategory_id }}">
