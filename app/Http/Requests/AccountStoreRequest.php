@@ -73,9 +73,9 @@ class AccountStoreRequest extends FormRequest
             //繰り返し期限
              'repeat_until.date' => '繰り返し期限は正しい日付を入力してください。',
             'repeat_until.after_or_equal' =>
-                '繰り返し期限は開始日以降の日付を指定してください。',
+                '繰り返し期限は指定した日付以降で設定してください。',
             'repeat_until.before_or_equal' =>
-                '繰り返し期限は開始日から2年以内で指定してください。',
+                '繰り返し期限は、入力した日付から最大2年以内で設定してください。',
         ];
     }
 

@@ -141,13 +141,16 @@
         </div>
 
         {{-- メモ --}}
-        <div class="mb-4">
-          <label class="form-label">メモ</label>
-          <input type="text"
-                 name="memo"
-                 value="{{ old('memo', $account->memo) }}"
-                 class="form-control">
-        </div>
+       <div class="mb-4">
+        <label for="memo" class="form-label">メモ</label>
+        <textarea id="memo"
+                  name="memo"
+                  class="form-control"
+                  rows="4"
+                  maxlength="255"
+                  placeholder="補足など">{{ old('memo', $account->memo) }}</textarea>
+      </div>
+
 
         {{-- 更新ボタン --}}
         <div class="mt-4 d-flex flex-wrap gap-2">

@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const statusCheckbox = document.getElementById('status_done');
   const subcatHidden   = document.getElementById('subcategory_id'); // hidden
 
+  
+
   // --- 終日切り替え ---
   function toggleAllDay() {
     if (!chkAllDay || !allDayOn || !allDayOff) return;

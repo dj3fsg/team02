@@ -25,6 +25,10 @@
 
   <div class="container-sm p-3">
     <div class="form-wrap bg-white p-4 rounded-3 shadow-sm">
+      <div class="alert alert-warning small">
+        <strong>注意：</strong><br>
+        繰り返し期限は、スケジュールは開始日から、タスクは設定日からそれぞれ2年以内で設定してください。
+      </div>
 
       @if ($errors->any())
         <div class="alert alert-danger">
@@ -82,7 +86,7 @@
                 name="sche_start_date"
                 class="form-control"
                 style="max-width: 150px;"
-                value="{{ old('sche_start_date') }}"
+                value="{{ old('sche_start_date',now()->format('Y-m-d')) }}"
                 min="{{ now()->toDateString() }}">
 
               <span>〜</span>
@@ -96,7 +100,7 @@
             <label class="form-label">日時</label>
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <input type="date" name="sche_start_date" class="form-control" style="max-width: 150px;"
-                     value="{{ old('sche_start_date') }}">
+                     value="{{ old('sche_start_date',now()->format('Y-m-d')) }}">
               <input type="time" name="sche_start_time" class="form-control" style="max-width: 100px;"
                      value="{{ old('sche_start_time') }}">
               <span>〜</span>
@@ -111,7 +115,7 @@
           <label class="form-label">期限</label>
           <div class="d-flex gap-2">
             <input type="datetime-local" name="sche_done" class="form-control" style="max-width: 300px;"
-                   value="{{ old('task_due_at') }}">
+                   value="{{ old('task_due_at', now()->format('Y-m-d\TH:i')) }}">
           </div>
         </div>
 

@@ -29,6 +29,11 @@
   <div class="container-sm p-3">
     <div class="form-wrap bg-white p-4 rounded-3 shadow-sm">
 
+    <div class="alert alert-warning small">
+      <strong>注意：</strong><br>
+      繰り返し期限は指定した日付を基準に、2年以内で設定してください。
+    </div>
+
       @if ($errors->any())
         <div class="alert alert-danger">
           <ul class="mb-0">
@@ -118,6 +123,7 @@
             style="max-width: 200px;"
             inputmode="numeric"
             value="{{ old('amount') }}"
+            placeholder="例：3000"
           >
         </div>
 
@@ -130,6 +136,7 @@
             style="max-width: 420px;"
             class="form-control"
             value="{{ old('title') }}"
+            placeholder="例：ランチ代"
           >
         </div>
       <label class="form-label">カテゴリ</label>
@@ -160,14 +167,13 @@
         <!-- メモ -->
         <div class="mb-4">
           <label class="form-label">メモ</label>
-          <input
-            type="text"
+           <textarea
             name="memo"
             rows="4"
             maxlength="255"
             class="form-control"
-            value="{{ old('memo') }}"
-          >
+            placeholder="補足など"
+          >{{ old('memo') }}</textarea>
         </div>
 
         <!-- ボタン -->
